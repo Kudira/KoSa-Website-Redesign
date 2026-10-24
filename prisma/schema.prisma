@@ -1,0 +1,577 @@
+// Prisma schema — KO-SA Beach Resort
+//
+// Two domains live side-by-side:
+//   1. Operational: AdminUser, NewsletterSubscriber, ContactEnquiry, Booking,
+//      CloudbedsToken, ChatSession, ChatMessage. These existed before the CMS
+//      and are unchanged.
+//   2. CMS: Room, Treatment, Experience, DiningVenue, MenuSection, MenuItem,
+//      GalleryItem, JournalPost, VirtualTourScene, Testimonial, SiteSetting,
+//      MediaAsset. These power the admin dashboard and the public site.
+//
+// Localisation convention (see ADMIN_CMS_PROGRESS.md): primary fields hold the
+// English copy; a `translations` `Json` column overlays other locales as
+// `{ "<locale>": { "<field>": "<value>" } }`. Missing keys fall back to EN.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  AUTH / ADMIN                                                          ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+model AdminUser {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  password  String
+  role      AdminRole @default(EDITOR)
+  active    Boolean   @default(true)
+  lastSeen  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum AdminRole {
+  OWNER
+  EDITOR
+  SUPPORT
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  MARKETING / TRANSACTIONAL                                             ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?
+  consented Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model ContactEnquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String   @db.Text
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  BOOKINGS (Cloudbeds cache)                                            ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+model Booking {
+  id                     String        @id @default(cuid())
+  cloudbedsReservationId String?       @unique
+  confirmationNumber     String?       @unique
+  guestName              String
+  guestEmail             String
+  guestPhone             String?
+  checkIn                DateTime
+  checkOut               DateTime
+  adults                 Int           @default(2)
+  children               Int           @default(0)
+  roomTypeId             String?
+  roomTypeName           String?
+  ratePlanId             String?
+  totalCost              Decimal?      @db.Decimal(10, 2)
+  currency               String        @default("GHS")
+  status                 BookingStatus @default(PENDING)
+  paymentProvider        String?
+  paymentRef             String?
+  notes                  String?       @db.Text
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  @@index([guestEmail])
+  @@index([checkIn, checkOut])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model CloudbedsToken {
+  id           String   @id @default(cuid())
+  accessToken  String   @db.Text
+  refreshToken String   @db.Text
+  expiresAt    DateTime
+  propertyId   String
+  scope        String?
+  updatedAt    DateTime @updatedAt
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  AI CHAT                                                               ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+model ChatSession {
+  id            String        @id @default(cuid())
+  sessionId     String        @unique
+  guestName     String?
+  guestEmail    String?
+  reservationId String?
+  status        SessionStatus @default(ACTIVE)
+  sentiment     Sentiment     @default(NEUTRAL)
+  tags          String[]
+  messages      ChatMessage[]
+  // Agent takeover fields
+  agentId       String?       // AdminUser.id of the agent currently in the conversation
+  agentName     String?       // Denormalised name so widget can greet guest by agent's name
+  agentJoinedAt DateTime?     // When the agent took over
+  createdAt     DateTime      @default(now())
+  lastMessageAt DateTime      @updatedAt
+  resolvedAt    DateTime?
+
+  @@index([status])
+  @@index([guestEmail])
+  @@index([agentId])
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  role      MessageRole
+  content   String      @db.Text
+  sources   String[]
+  flagged   Boolean     @default(false)
+  adminNote String?     @db.Text
+  createdAt DateTime    @default(now())
+
+  @@index([sessionId, createdAt])
+}
+
+enum SessionStatus {
+  ACTIVE
+  NEEDS_ADMIN
+  ADMIN_REPLIED
+  AGENT_ACTIVE  // Agent has taken over; AI responses are paused
+  RESOLVED
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  ADMIN    // Agent-sent message
+  SYSTEM   // Handoff / system notifications (join, release, etc.)
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  CMS · CONTENT MODELS                                                  ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum RoomCategory {
+  SUITE
+  PALM_SIDE
+  BEACH_VIEW
+  BUNGALOW
+  VILLA
+}
+
+// ─── Rooms ────────────────────────────────────────────────────────────────
+
+model Room {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  name         String
+  tagline      String?
+  category     RoomCategory
+  description  String?       @db.Text
+  price        Decimal       @db.Decimal(10, 2)
+  currency     String        @default("USD")
+  maxGuests    Int           @default(2)
+  bedConfig    String?
+  sizeSqm      Int?
+  image        String?
+  gallery      String[]
+  amenities    String[]
+  features     String[]
+  // Cloudbeds linkage (optional — overrides price/availability when set)
+  cloudbedsRoomTypeId String?
+  // Occupancy: false = currently booked/occupied. The AI concierge and the
+  // public site read this (plus active Bookings) so a fully-booked resort stays
+  // shown as booked until an admin frees the room.
+  available    Boolean       @default(true)
+  status       PublishStatus @default(PUBLISHED)
+  sortOrder    Int           @default(0)
+  translations Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+// ─── Wellness treatments ──────────────────────────────────────────────────
+
+model Treatment {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  name          String
+  description   String?       @db.Text
+  durationMin   Int           @default(60)
+  price         Decimal       @db.Decimal(10, 2)
+  currency      String        @default("USD")
+  image         String?
+  category      String?       // "Spa", "Yoga", "Sound", "Group"
+  status        PublishStatus @default(PUBLISHED)
+  sortOrder     Int           @default(0)
+  translations  Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+// ─── Experiences ──────────────────────────────────────────────────────────
+
+model Experience {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  label         String
+  title         String
+  description   String        @db.Text
+  longBody      String?       @db.Text
+  image         String?
+  gallery       String[]
+  adinkra       String?       // adinkra icon name
+  duration      String?
+  status        PublishStatus @default(PUBLISHED)
+  sortOrder     Int           @default(0)
+  translations  Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+// ─── Dining ───────────────────────────────────────────────────────────────
+
+model DiningVenue {
+  id           String         @id @default(cuid())
+  slug         String         @unique
+  name         String
+  tagline      String?
+  description  String?        @db.Text
+  hours        String?
+  image        String?
+  gallery      String[]
+  sections     MenuSection[]
+  status       PublishStatus  @default(PUBLISHED)
+  sortOrder    Int            @default(0)
+  translations Json?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+model MenuSection {
+  id           String      @id @default(cuid())
+  venueId      String
+  venue        DiningVenue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?     @db.Text
+  sortOrder    Int         @default(0)
+  items        MenuItem[]
+  translations Json?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([venueId, sortOrder])
+}
+
+model MenuItem {
+  id           String      @id @default(cuid())
+  sectionId    String
+  section      MenuSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?     @db.Text
+  price        Decimal?    @db.Decimal(10, 2)
+  currency     String      @default("USD")
+  dietary      String[]    // "VG", "GF", "DF", etc.
+  isFeatured   Boolean     @default(false)
+  sortOrder    Int         @default(0)
+  translations Json?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([sectionId, sortOrder])
+}
+
+// ─── Gallery ──────────────────────────────────────────────────────────────
+
+model GalleryItem {
+  id           String        @id @default(cuid())
+  imageUrl     String
+  caption      String?
+  alt          String?
+  category     String?       // free-form ("rooms","beach","food","wellness")
+  width        Int?
+  height       Int?
+  status       PublishStatus @default(PUBLISHED)
+  sortOrder    Int           @default(0)
+  translations Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+  @@index([category])
+}
+
+// ─── Journal / Blog ───────────────────────────────────────────────────────
+
+model JournalPost {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  excerpt      String?       @db.Text
+  body         String        @db.Text       // HTML
+  image        String?
+  author       String?
+  tags         String[]
+  status       PublishStatus @default(DRAFT)
+  publishedAt  DateTime?
+  seoTitle     String?
+  seoDescription String?     @db.Text
+  translations Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+// ─── Virtual Tour ─────────────────────────────────────────────────────────
+
+model VirtualTourScene {
+  id           String        @id @default(cuid())
+  sceneId      String        @unique   // stable id for the URL
+  name         String
+  imageUrl     String
+  thumbnailUrl String?
+  description  String?       @db.Text
+  status       PublishStatus @default(PUBLISHED)
+  sortOrder    Int           @default(0)
+  translations Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+// ─── Testimonials ─────────────────────────────────────────────────────────
+
+model Testimonial {
+  id           String        @id @default(cuid())
+  guestName    String
+  country      String?
+  rating       Int           @default(5)
+  quote        String        @db.Text
+  avatarUrl    String?
+  source       String?       // "TripAdvisor", "Direct", etc.
+  status       PublishStatus @default(PUBLISHED)
+  sortOrder    Int           @default(0)
+  translations Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+// ─── Site Settings (key/value) ────────────────────────────────────────────
+//
+// One row per logical group (e.g. "hero", "footer", "contact", "integrations",
+// "seo"). `value` is JSON — opaque to Prisma; schema enforced in zod.
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Media Library ────────────────────────────────────────────────────────
+
+model MediaAsset {
+  id          String   @id @default(cuid())
+  path        String   @unique  // storage path
+  url         String              // public URL
+  bucket      String   @default("kosa-public")
+  filename    String
+  mimeType    String
+  size        Int
+  width       Int?
+  height      Int?
+  alt         String?
+  folder      String?  // virtual folder for grouping
+  uploadedBy  String?
+  createdAt   DateTime @default(now())
+
+  @@index([folder])
+  @@index([createdAt])
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  DAILY ACTIVITIES                                                      ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+model DailyActivity {
+  id          String        @id @default(cuid())
+  day         DayOfWeek
+  time        String
+  title       String
+  description String        @db.Text
+  tag         String?
+  image       String?
+  isFree      Boolean       @default(true)
+  status      PublishStatus @default(PUBLISHED)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([day, status])
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  WELLNESS PACKAGES                                                     ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+model WellnessPackage {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  name             String
+  tagline          String
+  category         String
+  durationLabel    String
+  priceGhs         Int
+  originalPriceGhs Int?
+  priceNote        String        @default("Solo")
+  couplePriceGhs   Int?
+  couplePriceNote  String?
+  inclusions       String[]
+  image            String?
+  gallery          String[]
+  status           PublishStatus @default(PUBLISHED)
+  sortOrder        Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  STAY ENHANCEMENTS                                                     ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+model StayEnhancement {
+  id          String        @id @default(cuid())
+  category    String
+  name        String
+  description String?
+  priceGhs    Int
+  priceTo     Int?
+  priceNote   String?
+  image       String?
+  status      PublishStatus @default(PUBLISHED)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([category, status])
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  EVENTS & ACTIVITIES  (public /events page, pulled from ko-sa.com)     ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+model Event {
+  id                 String        @id @default(cuid())
+  slug               String        @unique
+  title              String
+  category           String        // Cultural, Culinary, Arts, Adventure, Nature, Celebrations
+  description        String        @db.Text
+  image              String?
+  transportIncluded  Boolean       @default(false)
+  priceNote          String?       // e.g. "From GHS 600 per person" or "On request"
+  status             PublishStatus @default(PUBLISHED)
+  sortOrder          Int           @default(0)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([category, status])
+  @@index([status, sortOrder])
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║  SERVICE ENQUIRIES  (click-to-book / enquire on services -> WhatsApp)  ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+// Every Book/Enquire button on a service (treatment, enhancement, package,
+// event, dining, experience, transfer) records one of these before opening
+// WhatsApp, so the team sees demand in the admin dashboard. Room booking and
+// the navbar Book CTA are intentionally excluded (they go to Cloudbeds).
+
+model ServiceEnquiry {
+  id        String              @id @default(cuid())
+  category  ServiceEnquiryType
+  itemName  String              // the specific service, e.g. "Swedish Massage"
+  message   String              @db.Text  // the WhatsApp message text sent
+  source    String?             // page/context the click came from
+  status    ServiceEnquiryStatus @default(NEW)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  @@index([status, createdAt])
+  @@index([category])
+}
+
+enum ServiceEnquiryType {
+  TREATMENT
+  ENHANCEMENT
+  PACKAGE
+  EVENT
+  DINING
+  EXPERIENCE
+  TRANSFER
+  OTHER
+}
+
+enum ServiceEnquiryStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}

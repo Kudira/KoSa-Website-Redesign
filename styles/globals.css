@@ -1,0 +1,285 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────────────────
+   KO-SA redesign · global layer
+   The page has one ambient idea: the sky. `--sky` is the page ground and
+   drifts from morning cream to night as the homepage scrolls (see
+   components/ui/Sky.tsx). Everything else is quiet.
+───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --sky: #f8f7f1;
+  --ink: #2e5339;
+
+  --teal: #007c9d;
+  --forest: #2e5339;
+  --coral: #e57355;
+  --sand: #eeddc2;
+  --cream: #f8f7f1;
+  --sunshine: #f4b342;
+  --night: #032a36;
+
+  /* shadcn-style + legacy variables the admin still reads */
+  --background: #f8f7f1;
+  --foreground: #2e5339;
+  --primary: #007c9d;
+  --primary-dark: #004d61;
+  --primary-foreground: #f8f7f1;
+  --secondary: #e57355;
+  --secondary-foreground: #f8f7f1;
+  --accent: #f4b342;
+  --accent-foreground: #142519;
+  --muted: #eeddc2;
+  --muted-foreground: #5a7260;
+  --card: #fdfcf9;
+  --card-foreground: #2e5339;
+  --border: #e3c9a0;
+  --input: #e3c9a0;
+  --ring: #007c9d;
+  --destructive: #a2432c;
+  --destructive-foreground: #ffffff;
+  --cta: #e57355;
+  --cta-light: #ea8e76;
+  --color-warm-brown: #5a7260;
+
+  /* The admin's old next/font variables now point at the new pair. */
+  --font-playfair: 'Fraunces Variable', Georgia, serif;
+  --font-raleway: 'Figtree Variable', system-ui, sans-serif;
+  --font-open-sans: 'Figtree Variable', system-ui, sans-serif;
+
+  --ease-tide: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-size: 100%;
+  background: var(--sky);
+}
+
+body {
+  background: var(--sky);
+  color: var(--ink);
+  font-family: 'Figtree Variable', system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-feature-settings: 'kern', 'liga', 'calt';
+  transition: background-color 1.4s var(--ease-tide), color 1.4s var(--ease-tide);
+}
+
+h1, h2, h3, h4, p, a, span, li {
+  overflow-wrap: break-word;
+}
+
+/* Fraunces: soft, warm optical sizing by default. */
+.font-display {
+  font-variation-settings: 'SOFT' 100, 'WONK' 0;
+  font-optical-sizing: auto;
+}
+.font-display-wonk {
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+::selection {
+  background: var(--sunshine);
+  color: var(--forest);
+}
+
+:focus-visible {
+  outline: 2px solid var(--sunshine);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--forest);
+  color: var(--cream);
+  padding: 0.75rem 1rem;
+  z-index: 200;
+  border-radius: 999px;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* ── Lenis ─────────────────────────────────────────────────────────────── */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ── Layout ────────────────────────────────────────────────────────────── */
+.container-page {
+  width: 100%;
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+@media (min-width: 768px) {
+  .container-page { padding-left: 2.5rem; padding-right: 2.5rem; }
+}
+@media (min-width: 1280px) {
+  .container-page { padding-left: 4rem; padding-right: 4rem; }
+}
+
+/* Small label. Sentence case, never all caps: a quiet signpost. */
+.eyebrow {
+  font-family: 'Figtree Variable', system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: currentColor;
+  opacity: 0.72;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Photography grade: warm, sunlit, never neon. */
+.branded-img,
+.branded-img img,
+.branded-img video {
+  filter: saturate(1.06) contrast(1.02);
+}
+
+/* Film grain over photography and the night sky. Pure CSS, no asset. */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ── Link with a growing underline (used in prose + nav) ──────────────── */
+.link-tide {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.6s var(--ease-tide);
+  padding-bottom: 2px;
+}
+.link-tide:hover,
+.link-tide:focus-visible { background-size: 100% 1px; }
+
+/* ── Utilities kept for the admin and untouched markup ─────────────────── */
+.marquee { display: flex; width: max-content; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.gold-rule { display: flex; align-items: center; gap: 1rem; }
+.gold-rule::before,
+.gold-rule::after { content: ''; flex: 1; height: 1px; background: rgba(0, 124, 157, 0.3); }
+
+.btn {
+  font-family: 'Figtree Variable', system-ui, sans-serif;
+  font-weight: 600;
+  padding: 0.8rem 1.75rem;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  border: 1.5px solid transparent;
+  display: inline-block;
+}
+.btn-primary { background: var(--teal); color: var(--cream); }
+.btn-primary:hover { background: #004d61; }
+.btn-secondary { border-color: var(--teal); color: var(--teal); }
+.btn-secondary:hover { background: var(--teal); color: var(--cream); }
+.btn-outline-animated { border-color: var(--teal); color: var(--teal); }
+.btn-outline-animated:hover { background: var(--teal); color: var(--cream); }
+
+.card-3d, .card-3d-lift, .card-shine { position: relative; }
+.card-3d-inner, .card-3d-float, .card-3d-img { transition: transform 0.9s var(--ease-tide); }
+.card-3d:hover .card-3d-img { transform: scale(1.04); }
+
+/* ── Image loading (SmoothImage) ───────────────────────────────────────── */
+@keyframes kosa-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.kosa-shimmer {
+  background-color: #eeddc2;
+  background-image: linear-gradient(100deg, rgba(238, 221, 194, 0) 20%, rgba(248, 247, 241, 0.85) 45%, rgba(238, 221, 194, 0) 75%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: kosa-shimmer 3.2s ease-in-out infinite;
+}
+.kosa-img-fallback {
+  background: radial-gradient(120% 90% at 30% 20%, #f6eee0 0%, #eeddc2 40%, #66b0c4 85%, #007c9d 100%);
+}
+.kosa-fade-in { opacity: 0; transition: opacity 1s ease-out; }
+.kosa-fade-in[data-loaded='true'] { opacity: 1; }
+
+/* ── Journal prose ─────────────────────────────────────────────────────── */
+.kosa-prose {
+  font-family: 'Fraunces Variable', Georgia, serif;
+  font-variation-settings: 'SOFT' 100, 'opsz' 18;
+  color: var(--forest);
+  font-size: 1.1875rem;
+  line-height: 1.8;
+  max-width: 62ch;
+}
+.kosa-prose > * + * { margin-top: 1.3em; }
+.kosa-prose h2 {
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  line-height: 1.15;
+  margin-top: 2em;
+  letter-spacing: -0.015em;
+}
+.kosa-prose h3 {
+  font-family: 'Figtree Variable', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-top: 1.8em;
+}
+.kosa-prose a { color: var(--teal); text-decoration: underline; text-underline-offset: 4px; }
+.kosa-prose blockquote {
+  border-left: 3px solid var(--coral);
+  padding-left: 1.25rem;
+  font-style: italic;
+  font-size: 1.35rem;
+}
+.kosa-prose img { border-radius: 1.5rem; }
+.kosa-prose ul { list-style: disc; padding-left: 1.25rem; }
+.kosa-prose ol { list-style: decimal; padding-left: 1.25rem; }
+
+/* ── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Form fields: soft, pebble-cornered, calm focus ───────────────────── */
+.field {
+  width: 100%;
+  min-height: 3.25rem;
+  border-radius: 1.1rem;
+  background: rgba(253, 252, 249, 0.9);
+  padding: 0.8rem 1.1rem;
+  box-shadow: inset 0 0 0 1px rgba(46, 83, 57, 0.18);
+  color: #2e5339;
+  font-size: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+.field::placeholder { color: rgba(46, 83, 57, 0.45); }
+.field:focus { outline: none; box-shadow: inset 0 0 0 2px #007c9d; }
+textarea.field { min-height: 8rem; }
