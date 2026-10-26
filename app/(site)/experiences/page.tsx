@@ -38,7 +38,7 @@ const SIGNATURE = [
 ] as const;
 
 export default async function ExperiencesPage() {
-  const { t } = getT();
+  const { t } = await getT();
   const [experiences, allActivities, allEnhancements, pricing] = await Promise.all([
     listPublicExperiences(),
     listPublicDailyActivities().catch(() => []),

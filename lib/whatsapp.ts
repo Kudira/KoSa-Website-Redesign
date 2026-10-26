@@ -10,7 +10,8 @@ import { site } from '@/lib/site';
 import { formatGhs } from '@/lib/pricing';
 
 export function waUrl(message: string) {
-  return `https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(message)}`;
+  // Brackets are encoded too, so links stay whole inside [label](url) text.
+  return `https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(message).replace(/\(/g, '%28').replace(/\)/g, '%29')}`;
 }
 
 const lines = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join('\n');

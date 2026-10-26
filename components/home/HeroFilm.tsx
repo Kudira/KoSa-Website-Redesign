@@ -11,7 +11,7 @@ import { Tide } from '@/components/ui/Tide';
 import { Button } from '@/components/shared/Button';
 import { useT } from '@/lib/i18n';
 import { site } from '@/lib/site';
-import { media } from '@/lib/content/media';
+import { media, mediaDefaults } from '@/lib/content/media';
 
 export function HeroFilm({ videoUrl, posterUrl, urgency }: { videoUrl?: string; posterUrl?: string; urgency?: string }) {
   const { t } = useT();
@@ -21,14 +21,16 @@ export function HeroFilm({ videoUrl, posterUrl, urgency }: { videoUrl?: string; 
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
   const lift = useTransform(scrollYProgress, [0, 1], ['0%', '-18%']);
   const words = t('hero.headline').split(' ');
-  const poster = posterUrl || media.banner;
+  // The photo and film are edited in Admin > Pages > Home. Older Settings values still work.
+  const poster = media.banner !== mediaDefaults.banner ? media.banner : posterUrl || media.banner;
+  const film = media.heroVideo || videoUrl;
 
   return (
     <section ref={ref} data-sky="dawn" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-teal-800 text-cream">
       <motion.div className="absolute inset-0" style={reduce ? undefined : { scale }}>
-        {videoUrl ? (
+        {film ? (
           <video className="h-full w-full object-cover branded-img" autoPlay muted loop playsInline poster={poster} preload="metadata">
-            <source src={videoUrl} />
+            <source src={film} />
           </video>
         ) : (
           <Image src={poster} alt={t('alt.heroShoreline')} fill priority sizes="100vw" className="object-cover branded-img" />

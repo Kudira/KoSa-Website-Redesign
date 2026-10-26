@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import { Instagram, Facebook, MessageCircle } from 'lucide-react';
 import { Logo } from './Logo';
 import { NewsletterForm } from '@/components/shared/NewsletterForm';
+import { contentState } from '@/lib/content/store';
 import { Tide } from '@/components/ui/Tide';
 import { site } from '@/lib/site';
 import { useT } from '@/lib/i18n';
@@ -34,13 +35,14 @@ const STARS = Array.from({ length: 46 }, (_, i) => {
   return { x: r(1) * 100, y: r(2) * 62, s: r(3) > 0.85 ? 3 : r(3) > 0.5 ? 2 : 1.4, d: r(4) * 5 };
 });
 
-const REVIEW_LINKS = [
+const reviewLinks = () => [
   { label: 'Google', url: site.reviews.google.url },
   { label: 'Booking.com', url: site.reviews.booking.url },
   { label: 'TripAdvisor', url: site.reviews.tripadvisor.url },
 ];
 
 export function Footer() {
+  const REVIEW_LINKS = reviewLinks();
   const pathname = usePathname();
   const { t } = useT();
   if (pathname?.startsWith('/admin')) return null;
@@ -115,11 +117,13 @@ export function Footer() {
               </ul>
             </div>
 
-            <div className="lg:col-span-3">
-              <h2 className="text-sm text-cream/55 mb-5">{t('footer.newsletter')}</h2>
-              <p className="text-cream/70 mb-5">{t('footer.newsletterBlurb')}</p>
-              <NewsletterForm />
-            </div>
+            {contentState().flags.newsletterEnabled !== false && (
+              <div className="lg:col-span-3">
+                <h2 className="text-sm text-cream/55 mb-5">{t('footer.newsletter')}</h2>
+                <p className="text-cream/70 mb-5">{t('footer.newsletterBlurb')}</p>
+                <NewsletterForm />
+              </div>
+            )}
           </div>
 
           <div className="mt-20 flex flex-col gap-3 pb-6 text-sm text-cream/60 md:flex-row md:items-center">

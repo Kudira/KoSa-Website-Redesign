@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { LinkButton } from '@/components/admin/Button';
 import { DataTable, StatusBadge } from '@/components/admin/DataTable';
-import { formatCurrency } from '@/lib/utils';
+import { formatGhs, roomStartingRateGhs } from '@/lib/pricing';
 
 export const metadata: Metadata = { title: 'Rooms · Admin', robots: { index: false } };
 export const dynamic = 'force-dynamic';
@@ -61,8 +61,13 @@ export default async function RoomsListPage() {
             className: 'hidden md:table-cell',
           },
           {
-            header: 'Price',
-            cell: (r) => formatCurrency(Number(r.price), r.currency),
+            header: 'Backup price',
+            cell: (r) => (
+              <span className="text-xs">
+                {formatGhs(roomStartingRateGhs(r.slug, Number(r.price)))}
+                {Number(r.price) > 0 ? '' : ' (rate sheet)'}
+              </span>
+            ),
             className: 'hidden md:table-cell',
           },
           {

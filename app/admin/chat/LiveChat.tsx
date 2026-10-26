@@ -8,8 +8,8 @@
 // Real-time: subscribes to GET /api/admin/chat/stream (SSE, auto-reconnects).
 // Agent actions:
 //   - "Monitor"  - watches without changing anything (SSE already does this)
-//   - "Take Over" - sets AGENT_ACTIVE, pauses AI, enables reply input
-//   - "Release"   - hands back to AI, clears agent fields
+//   - "Take Over" - sets AGENT_ACTIVE, pauses Abena, enables reply input
+//   - "Release"   - hands back to Abena, clears agent fields
 //   - "Resolve"   - marks session RESOLVED
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -30,6 +30,7 @@ interface ChatMsg {
   id: string;
   sessionId: string;
   role: MsgRole;
+  flagged?: boolean;
   content: string;
   createdAt: string;
 }
@@ -91,7 +92,7 @@ function parseSystemMsg(content: string): string {
   }
   if (content.startsWith('__AGENT_LEAVE__')) {
     const name = content.replace('__AGENT_LEAVE__', '');
-    return `${name} handed back to AI concierge.`;
+    return `${name} handed back to Abena.`;
   }
   return content;
 }
@@ -158,6 +159,7 @@ function MessageBubble({ msg }: { msg: ChatMsg }) {
         )}>
           {isAgent ? 'You · ' : isAI ? 'Abena · ' : 'Guest · '}
           {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {isAI && msg.flagged && <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-amber-800">Abena didn’t know this, sent the guest to WhatsApp</span>}
         </p>
       </div>
       {isUser && (
@@ -599,7 +601,7 @@ export function LiveChat({ initialSessions }: { initialSessions: ChatSessionSumm
                         ? <Loader2 size={13} className="animate-spin" />
                         : <LogOut size={13} />
                       }
-                      Release to AI
+                      Hand back to Abena
                     </button>
                   )}
                 </div>
@@ -609,7 +611,7 @@ export function LiveChat({ initialSessions }: { initialSessions: ChatSessionSumm
               {isAgentHere && (
                 <div className="bg-teal-700 text-cream text-xs font-opensans px-5 py-2 flex items-center gap-2 shrink-0">
                   <UserCheck size={13} />
-                  You are chatting directly with this guest. AI is paused.
+                  You are chatting directly with this guest. Abena is paused.
                 </div>
               )}
 
@@ -654,7 +656,7 @@ export function LiveChat({ initialSessions }: { initialSessions: ChatSessionSumm
                 <div className="flex items-center justify-center gap-2 px-5 py-3 border-t border-warm-grey/20 bg-cream/60 shrink-0">
                   <Bot size={15} className="text-umber/40" />
                   <p className="text-xs text-umber/50 font-opensans">
-                    AI concierge is handling this conversation.{' '}
+                    Abena is answering this conversation.{' '}
                     <button onClick={takeover} className="text-teal-700 underline hover:no-underline">
                       Take over
                     </button>{' '}

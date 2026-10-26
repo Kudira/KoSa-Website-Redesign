@@ -17,8 +17,8 @@ interface Props {
   searchParams: { checkIn?: string; checkOut?: string; adults?: string; children?: string; room?: string };
 }
 
-export default function BookPage({ searchParams }: Props) {
-  const { t } = getT();
+export default async function BookPage({ searchParams }: Props) {
+  const { t } = await getT();
   const wa = `${site.socials.whatsapp}?text=${encodeURIComponent("Hi KoSa! I'd like help booking a stay. My dates are [check-in] to [check-out], for [number] guests.")}`;
   return (
     <>

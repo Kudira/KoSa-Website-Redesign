@@ -20,10 +20,13 @@ import Image, { type ImageProps } from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { BRAND_LQIP } from '@/lib/image';
+import { swapImage } from '@/lib/content/store';
 
 type Props = ImageProps & { wrapperClassName?: string };
 
-export function SmoothImage({ className, wrapperClassName, onLoad, onError, fill, quality, ...props }: Props) {
+export function SmoothImage({ className, wrapperClassName, onLoad, onError, fill, quality, ...rest }: Props) {
+  // Photos replaced in /admin/pages are swapped here, wherever they are used.
+  const props = typeof rest.src === 'string' ? { ...rest, src: swapImage(rest.src) } : rest;
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const ref = useRef<HTMLImageElement | null>(null);

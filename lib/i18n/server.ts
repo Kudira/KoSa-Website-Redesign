@@ -11,6 +11,7 @@ import {
   type DictKey,
   type Locale,
 } from './dictionaries';
+import { loadContent } from '@/lib/content/load';
 
 export function getServerLocale(): Locale {
   try {
@@ -30,7 +31,8 @@ export function getServerLocale(): Locale {
  *   const { t } = getT();
  *   return <h1>{t('rooms.headline')}</h1>;
  */
-export function getT() {
+export async function getT() {
+  await loadContent();
   const locale = getServerLocale();
   const t = (key: DictKey) => translate(locale, key);
   return { t, locale };

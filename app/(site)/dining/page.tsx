@@ -37,7 +37,7 @@ const SECTIONS = [
 ] as const;
 
 export default async function DiningPage() {
-  const { t } = getT();
+  const { t } = await getT();
   const [venues, galleryItems] = await Promise.all([listPublicDiningVenues(), listPublicGallery()]);
   const foodItems = galleryItems.filter((i) => i.category === 'dining');
   const intro = sentences(t('diningPage.intro'));

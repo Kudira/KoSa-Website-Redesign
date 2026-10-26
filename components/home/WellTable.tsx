@@ -6,8 +6,8 @@ import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { getT } from '@/lib/i18n/server';
 import { media, sentences } from '@/lib/content/media';
 
-export function WellTable() {
-  const { t } = getT();
+export async function WellTable() {
+  const { t } = await getT();
   const wellLead = sentences(t('wellnessPage.intro'))[0];
   const diningLead = sentences(t('diningPage.intro'))[0];
 

@@ -4,56 +4,8 @@ import { listPublicTourScenes } from '@/lib/cms/virtualTour';
 
 export const dynamic = 'force-dynamic';
 
-const FALLBACK_SCENES = [
-  {
-    sceneId: 'beach',
-    sceneName: 'Beach',
-    imageUrl:
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=4000',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=400',
-  },
-  {
-    sceneId: 'palm-garden',
-    sceneName: 'Palm Garden',
-    imageUrl:
-      'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?auto=format&fit=crop&q=80&w=4000',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?auto=format&fit=crop&q=80&w=400',
-  },
-  {
-    sceneId: 'signature-suite',
-    sceneName: 'Signature Suite',
-    imageUrl:
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=4000',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=400',
-  },
-  {
-    sceneId: 'pool',
-    sceneName: 'Infinity Pool',
-    imageUrl:
-      'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80&w=4000',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80&w=400',
-  },
-  {
-    sceneId: 'spa',
-    sceneName: 'Spa',
-    imageUrl:
-      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=4000',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=400',
-  },
-  {
-    sceneId: 'dining',
-    sceneName: 'Dining Terrace',
-    imageUrl:
-      'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=4000',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=400',
-  },
-];
+// No stock photos: until real 360° scenes are added in Admin > Virtual Tour, the page shows its empty state.
+const FALLBACK_SCENES: { sceneId: string; sceneName: string; imageUrl: string; thumbnailUrl: string }[] = [];
 
 export async function GET() {
   // 1. Prefer scenes curated in the admin CMS.

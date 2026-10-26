@@ -13,6 +13,7 @@ import { RetreatRhythm } from '@/components/wellness/RetreatRhythm';
 import { getT } from '@/lib/i18n/server';
 import { listPublicTreatments } from '@/lib/cms/treatments';
 import { getSetting } from '@/lib/cms/settings';
+import { pageText } from '@/lib/content/page-text';
 import {
   TREATMENTS_FALLBACK,
   treatmentPriceGhs,
@@ -68,7 +69,8 @@ const CATEGORY_IMG: Record<string, string> = {
 const DEFAULT_TREATMENT_IMG = `${WELLNESS}/spa-services.webp`;
 
 export default async function WellnessPage() {
-  const { t } = getT();
+  const w = pageText.wellness;
+  const { t } = await getT();
   const [cmsTreatments, pricing] = await Promise.all([
     listPublicTreatments(),
     getSetting('pricing'),
@@ -193,11 +195,11 @@ export default async function WellnessPage() {
       <section data-sky="golden" className="container-page py-24 md:py-32">
         <div className="grid gap-8 lg:grid-cols-12 mb-14">
           <div className="lg:col-span-6">
-            <p className="eyebrow mb-5">One-day escapes</p>
-            <h2 className="font-display text-display-md">Signature day journeys</h2>
+            <p className="eyebrow mb-5">{w.escapesEyebrow}</p>
+            <h2 className="font-display text-display-md">{w.escapesHeading}</h2>
           </div>
           <p className="lg:col-span-5 lg:col-start-8 text-lede opacity-85 self-end">
-            Three ways to spend a single unhurried day at O2. Each includes treatments, a fresh juice elixir where noted, and a wholesome meal.
+            {w.escapesIntro}
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -230,7 +232,7 @@ export default async function WellnessPage() {
                     i === 1 ? 'bg-sunshine text-forest-900 hover:bg-cream' : 'bg-forest text-cream hover:bg-forest-700',
                   )}
                 >
-                  Reserve this escape
+                  {w.escapeButton}
                 </BookButton>
               </article>
             );
@@ -243,11 +245,11 @@ export default async function WellnessPage() {
         <div className="container-page pt-6">
           <div className="grid gap-8 lg:grid-cols-12 mb-14">
             <div className="lg:col-span-6">
-              <p className="eyebrow mb-5">Multi-day retreats</p>
-              <h2 className="font-display text-display-md">Give it room to breathe</h2>
+              <p className="eyebrow mb-5">{w.retreatsEyebrow}</p>
+              <h2 className="font-display text-display-md">{w.retreatsHeading}</h2>
             </div>
             <p className="lg:col-span-5 lg:col-start-8 text-lede text-cream/85 self-end">
-              The Signature Rotation carries Relaxation, Detox and Beauty days across a longer stay, with room and full board included throughout.
+              {w.retreatsIntro}
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-3 mb-20">
@@ -255,16 +257,16 @@ export default async function WellnessPage() {
               <div key={tier.days} className="rounded-pebble bg-cream/[0.08] ring-1 ring-inset ring-cream/15 p-7">
                 <p className="font-display text-6xl leading-none">
                   {tier.days}
-                  <span className="ml-2 font-sans text-base text-cream/70">days</span>
+                  <span className="ml-2 font-sans text-base text-cream/70">{w.retreatDaysWord}</span>
                 </p>
                 <p className="mt-3 text-cream/70">{tier.rotation}</p>
                 <p className="mt-6 font-display text-3xl text-sunshine">{formatGhs(tier.spaGhs)}</p>
-                <p className="mt-1 text-sm text-cream/65">{formatGhs(tier.totalGhs)} total, including {tier.days} nights</p>
+                <p className="mt-1 text-sm text-cream/65">{formatGhs(tier.totalGhs)} {w.retreatTotalLine.replace('{days}', String(tier.days))}</p>
               </div>
             ))}
           </div>
           <RetreatRhythm />
-          <p className="mt-6 text-sm text-cream/60">The Signature Rotation extends to 7 or 10-day journeys; see the tiers above.</p>
+          <p className="mt-6 text-sm text-cream/60">{w.retreatsFootnote}</p>
         </div>
       </SeaBand>
 
@@ -283,16 +285,14 @@ export default async function WellnessPage() {
       <section data-sky="dusk" className="container-page py-24 md:py-32">
         <div className="grid gap-14 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <p className="eyebrow mb-5">Beyond the menu</p>
-            <h2 className="font-display text-display-lg text-balance">Or, let&rsquo;s design yours</h2>
-            <p className="mt-6 text-lede opacity-85">
-              Not every guest fits a set journey. Sit with our wellness team for a private consultation, and we&rsquo;ll build something around what you actually need, pulled from our full treatment menu.
-            </p>
+            <p className="eyebrow mb-5">{w.designEyebrow}</p>
+            <h2 className="font-display text-display-lg text-balance">{w.designHeading}</h2>
+            <p className="mt-6 text-lede opacity-85">{w.designIntro}</p>
             <ol className="mt-10">
               {[
-                { h: 'Consult', p: 'A private session to talk through goals, sensitivities, and time on property.' },
-                { h: 'Design', p: 'We build your itinerary from the same menu behind every package above.' },
-                { h: 'Arrive and exhale', p: 'Your rhythm is ready when you check in, with nothing left to plan.' },
+                { h: w.step1Title, p: w.step1Body },
+                { h: w.step2Title, p: w.step2Body },
+                { h: w.step3Title, p: w.step3Body },
               ].map((s, i) => (
                 <li key={s.h} className="flex gap-5 border-t border-forest-900/15 py-5">
                   <span className="font-display text-3xl tabular-nums opacity-60">{i + 1}</span>
@@ -310,10 +310,10 @@ export default async function WellnessPage() {
               source="wellness/closing"
               className="mt-8 inline-flex h-14 items-center rounded-full bg-forest-900 px-8 font-semibold text-cream transition-colors hover:bg-forest"
             >
-              Book a consultation
+              {w.consultButton}
             </BookButton>
             <p className="mt-4 flex items-center gap-3 text-sm opacity-75">
-              <WaveMark className="text-coral-700" /> Private Wellness Consultation, GHS 200, credited toward your custom itinerary.
+              <WaveMark className="text-coral-700" /> {w.consultNote}
             </p>
           </div>
           <div className="lg:col-span-6 lg:col-start-7">

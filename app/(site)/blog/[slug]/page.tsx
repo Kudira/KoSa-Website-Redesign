@@ -30,7 +30,7 @@ export default async function BlogPost({ params }: Props) {
   const p = await getPublicJournalPostBySlug(params.slug);
   if (!p) notFound();
 
-  const { t } = getT();
+  const { t } = await getT();
   const all = await listPublicJournalPosts();
   const related = all.filter((x) => x.slug !== p.slug).slice(0, 3);
   const wa = `${site.socials.whatsapp}?text=${encodeURIComponent(site.contact.whatsappMessage)}`;

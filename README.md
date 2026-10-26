@@ -107,16 +107,14 @@ This means the dev experience is **zero-config** - just `npm install && npm run 
 ```
 POST  /api/newsletter
 POST  /api/contact
-POST  /api/chat                          (Anthropic streaming + ES RAG)
+POST  /api/chat                          (Abena: reads the site's own knowledge, Cloudbeds prices, then WhatsApp)
 GET   /api/virtual-tour/scenes           (Google Drive)
 GET   /api/cloudbeds/callback            (OAuth)
+GET   /api/cloudbeds/status
 GET   /api/cloudbeds/availability
 GET   /api/cloudbeds/rooms
 GET   /api/cloudbeds/rates
-POST  /api/cloudbeds/reservation
-GET   /api/cloudbeds/reservation/[id]
-PUT   /api/cloudbeds/reservation/[id]
-DELETE /api/cloudbeds/reservation/[id]
+PUT   /api/admin/content                 (Admin > Pages: words, photos, prices)
 ```
 
 ## Brand tokens (Tailwind)
@@ -153,3 +151,17 @@ Fonts (via `next/font`): **Belleza** (headings) · **Raleway** (body, UI) · **B
 - [ ] Test booking flow end-to-end against Cloudbeds sandbox
 
 See `progress.md` for current status and what remains.
+
+
+## Editing pages (Admin > Pages)
+
+Every public page's words, photos, films and featured prices can be changed in **Admin > Pages**, page by page and section by section, in all six languages (photos and prices are shared across languages). Edits are saved as overrides in the `content` row of the `SiteSetting` table and appear on the site within about 15 seconds; **Reset** brings back the built-in wording.
+
+- Built-in wording lives in `lib/i18n/*` (translated) and `lib/content/page-text.ts` (English-only pages: wellness journeys, philosophy, legal). Photos and films: `lib/content/media.ts`. Featured prices and packages: `lib/pricing.ts`.
+- `lib/content/registry.generated.ts` lists what each page shows. After adding a page or changing which words a page uses, run `npm run pages:registry` and commit the result.
+- Lists (rooms, treatments, menus, packages, events, journal…) are still edited in their own admin sections.
+- Settings > Contact & social now drives the phone, WhatsApp, email, address and social links everywhere; SEO & sharing sets the Google title and share image; Notice banner shows a message on every page; Features switches Abena and the newsletter on or off.
+
+## Abena (website concierge)
+
+No AI service. `lib/knowledge/abena.ts` answers from KoSa's own information (`lib/knowledge/index.ts`: confirmed facts, every admin list, every page's wording and FAQ, journal stories) and live Cloudbeds rooms, in the guest's language for the framing. Anything she does not know goes to WhatsApp and is marked in Admin > Chat.

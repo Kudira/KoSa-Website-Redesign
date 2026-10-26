@@ -12,10 +12,19 @@ import { FloatingWhatsApp } from '@/components/shared/FloatingWhatsApp';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { ExitIntentPopup } from '@/components/marketing/ExitIntentPopup';
 import { Sky } from '@/components/ui/Sky';
+import { loadContent } from '@/lib/content/load';
 
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  // Switches from Admin > Settings (maintenance banner, chat, newsletter).
+  const { flags } = await loadContent();
+  const notice = flags.maintenance?.enabled ? flags.maintenance.message?.trim() : '';
   return (
     <>
+      {notice ? (
+        <div role="status" className="relative z-[60] bg-forest-900 px-4 py-2.5 text-center text-sm text-cream">
+          {notice}
+        </div>
+      ) : null}
       <a href="#main" className="skip-link">
         Skip to content
       </a>
@@ -26,9 +35,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <Navbar />
       <main id="main">{children}</main>
       <Footer />
-      <ChatWidget />
+      {flags.chatEnabled !== false && <ChatWidget />}
       <FloatingWhatsApp />
-      <ExitIntentPopup />
+      {flags.newsletterEnabled !== false && <ExitIntentPopup />}
     </>
   );
 }

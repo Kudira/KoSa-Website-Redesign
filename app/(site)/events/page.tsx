@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function EventsPage() {
-  const { t } = getT();
+  const { t } = await getT();
   const events = await listPublicEvents().catch(() => []);
 
   const gatherings = [

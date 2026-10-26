@@ -5,6 +5,7 @@
  */
 
 import { zh } from './zh';
+import { textOverride } from '@/lib/content/store';
 import { enRedesign, frRedesign, esRedesign, nlRedesign, deRedesign, zhRedesign } from './redesign';
 
 export const SUPPORTED_LOCALES = ['en', 'fr', 'es', 'nl', 'de', 'zh'] as const;
@@ -134,7 +135,7 @@ const enBase = {
   'chat.title': 'Abena',
   'chat.subtitle': 'Digital concierge · usually replies instantly',
   'chat.greeting':
-    "Akwaaba I'm Abena, your KoSa concierge · Ask me anything about the resort, our rooms, or planning your stay",
+    "Akwaaba! I'm Abena, your KoSa concierge · Ask me about rooms and live prices, the spa, food, things to do or getting here",
   'chat.placeholder': 'Ask anything…',
   'chat.send': 'Send',
   'chat.close': 'Close chat',
@@ -561,7 +562,7 @@ const enBase = {
   'roomDetail.taxesIncluded': 'Taxes & breakfast included',
   'roomDetail.reserve': 'Reserve',
   'roomDetail.askConcierge': 'Ask the concierge',
-  'roomDetail.freeCancellation': 'Free cancellation up to 48 hours before arrival',
+  'roomDetail.freeCancellation': 'Free cancellation up to 3 days before arrival',
   'roomDetail.otherRooms': 'Other rooms you might love',
   'roomDetail.descFallback':
     'A composed retreat soft linen, woven palm, hand-thrown ceramics · A room that breathes with the tide',
@@ -651,7 +652,7 @@ const enBase = {
   // Book page
   'bookPage.eyebrow': 'Reserve Your Return',
   'bookPage.title': 'Book Your Stay',
-  'bookPage.subtitle': 'Best rate, free cancellation up to 48 hours, instant confirmation',
+  'bookPage.subtitle': 'Live rates, a 30% deposit to confirm, free cancellation up to 3 days before arrival',
 
   // Booking flow
   'book.step.dates': 'Dates',
@@ -679,7 +680,7 @@ const enBase = {
   'book.nights': 'Nights',
   'book.nightsUnit': 'nights',
   'book.total': 'Total',
-  'book.taxesLine': 'Taxes and breakfast included · Free cancellation up to 48 hours',
+  'book.taxesLine': 'Taxes and breakfast included · Free cancellation up to 3 days before arrival',
   'book.doneHeading': 'Akwaaba we have your booking',
   'book.confirmationLabel': 'Confirmation:',
   'book.doneBody':
@@ -1229,7 +1230,7 @@ const frBase: Partial<Record<keyof typeof en, string>> = {
     "Arrivée à partir de 14 h, départ jusqu’à 11 h. Nous restons flexibles dans la mesure du possible n’hésitez pas à demander",
   'planPage.faq.cancellation.q': 'Quelle est votre politique d’annulation ?',
   'planPage.faq.cancellation.a':
-    "Remboursement de 50 % pour toute annulation reçue au moins 20 jours avant l’arrivée ; aucun remboursement au-delà. Les séjours en haute saison ne sont pas remboursables · Les réservations peuvent être modifiées jusqu’à 48 h avant l’arrivée un acompte de 50 % confirme la réservation",
+    "Annulation gratuite jusqu’à 72 heures (3 jours) avant l’arrivée. En cas d’annulation dans les 3 jours, 50 % de l’acompte est remboursé. En cas d’annulation dans les 24 heures ou de non-présentation, 50 % de l’acompte est conservé. Un acompte de 30 % confirme chaque réservation ; la facture d’acompte est valable 2 jours. Le solde est réglé à l’arrivée.",
   'planPage.faq.airport.q': 'Proposez-vous des transferts aéroport ?',
   'planPage.faq.airport.a':
     "Oui · Transferts privés et confortables depuis l’aéroport international Kotoka d’Accra · Réservez à l’avance pour que nous vous attendions à l’arrivée",
@@ -1320,7 +1321,7 @@ const frBase: Partial<Record<keyof typeof en, string>> = {
   'roomDetail.taxesIncluded': 'Taxes et petit-déjeuner inclus',
   'roomDetail.reserve': 'Réserver',
   'roomDetail.askConcierge': 'Demander au concierge',
-  'roomDetail.freeCancellation': "Annulation gratuite jusqu’à 48 heures avant l’arrivée",
+  'roomDetail.freeCancellation': "Annulation gratuite jusqu’à 3 jours avant l’arrivée",
   'roomDetail.otherRooms': 'D’autres chambres qui pourraient vous plaire',
   'roomDetail.descFallback':
     'Un refuge tout en mesure lin doux, palme tressée, céramiques façonnées à la main · Une chambre qui respire au rythme de la marée',
@@ -1430,7 +1431,7 @@ const frBase: Partial<Record<keyof typeof en, string>> = {
 
   'bookPage.eyebrow': 'Préparez votre retour',
   'bookPage.title': 'Réservez votre séjour',
-  'bookPage.subtitle': "Meilleur tarif, annulation gratuite jusqu’à 48 heures, confirmation immédiate",
+  'bookPage.subtitle': "Tarifs en direct, acompte de 30 % pour confirmer, annulation gratuite jusqu’à 3 jours avant l’arrivée",
 
   'book.step.dates': 'Dates',
   'book.step.room': 'Chambre',
@@ -1457,7 +1458,7 @@ const frBase: Partial<Record<keyof typeof en, string>> = {
   'book.nights': 'Nuits',
   'book.nightsUnit': 'nuits',
   'book.total': 'Total',
-  'book.taxesLine': "Taxes et petit-déjeuner inclus · Annulation gratuite jusqu’à 48 heures",
+  'book.taxesLine': "Taxes et petit-déjeuner inclus · Annulation gratuite jusqu’à 3 jours avant l’arrivée",
   'book.doneHeading': 'Akwaaba votre réservation est enregistrée',
   'book.confirmationLabel': 'Confirmation :',
   'book.doneBody':
@@ -1938,7 +1939,7 @@ const esBase: Partial<Record<keyof typeof en, string>> = {
     'Check-in desde las 14:00 y check-out hasta las 11:00. Somos flexibles cuando podemos solo pregúntanos',
   'planPage.faq.cancellation.q': '¿Cuál es la política de cancelación?',
   'planPage.faq.cancellation.a':
-    'Reembolso del 50 % en cancelaciones recibidas con al menos 20 días de antelación; después no hay reembolso · Las reservas en temporada alta no son reembolsables · Las reservas pueden modificarse hasta 48 horas antes de la llegada un depósito del 50 % confirma la reserva',
+    "Cancelación gratuita hasta 72 horas (3 días) antes de la llegada. Si cancela dentro de los 3 días previos, se reembolsa el 50 % del depósito. Si cancela dentro de las 24 horas previas o no se presenta, se retiene el 50 % del depósito. Un depósito del 30 % confirma cada reserva; la factura del depósito es válida 2 días. El resto se paga a la llegada.",
   'planPage.faq.airport.q': '¿Ofrecen traslados al aeropuerto?',
   'planPage.faq.airport.a':
     'Sí. Traslados privados y cómodos desde el aeropuerto internacional Kotoka de Accra · Reserva con tiempo para esperarte a la llegada',
@@ -2029,7 +2030,7 @@ const esBase: Partial<Record<keyof typeof en, string>> = {
   'roomDetail.taxesIncluded': 'Impuestos y desayuno incluidos',
   'roomDetail.reserve': 'Reservar',
   'roomDetail.askConcierge': 'Pregunta al conserje',
-  'roomDetail.freeCancellation': 'Cancelación gratuita hasta 48 horas antes de la llegada',
+  'roomDetail.freeCancellation': 'Cancelación gratuita hasta 3 días antes de la llegada',
   'roomDetail.otherRooms': 'Otras habitaciones que podrían gustarte',
   'roomDetail.descFallback':
     'Un refugio sereno lino suave, palma tejida, cerámica hecha a mano · Una habitación que respira con la marea',
@@ -2139,7 +2140,7 @@ const esBase: Partial<Record<keyof typeof en, string>> = {
 
   'bookPage.eyebrow': 'Prepara tu regreso',
   'bookPage.title': 'Reserva tu estancia',
-  'bookPage.subtitle': 'Mejor tarifa, cancelación gratuita hasta 48 horas, confirmación inmediata',
+  'bookPage.subtitle': 'Tarifas en directo, depósito del 30 % para confirmar, cancelación gratuita hasta 3 días antes de la llegada',
 
   'book.step.dates': 'Fechas',
   'book.step.room': 'Habitación',
@@ -2166,7 +2167,7 @@ const esBase: Partial<Record<keyof typeof en, string>> = {
   'book.nights': 'Noches',
   'book.nightsUnit': 'noches',
   'book.total': 'Total',
-  'book.taxesLine': 'Impuestos y desayuno incluidos · Cancelación gratuita hasta 48 horas',
+  'book.taxesLine': 'Impuestos y desayuno incluidos · Cancelación gratuita hasta 3 días antes de la llegada',
   'book.doneHeading': 'Akwaaba tenemos tu reserva',
   'book.confirmationLabel': 'Confirmación:',
   'book.doneBody':
@@ -2647,7 +2648,7 @@ const nlBase: Partial<Record<keyof typeof en, string>> = {
     'Inchecken vanaf 14:00 uur, uitchecken tot 11:00 uur · Waar mogelijk zijn we flexibel vraag het ons gewoon',
   'planPage.faq.cancellation.q': 'Wat is jullie annuleringsbeleid?',
   'planPage.faq.cancellation.a':
-    '50 % terugbetaling bij annulering minstens 20 dagen voor aankomst; daarna geen terugbetaling · Boekingen in het hoogseizoen zijn niet-restitueerbaar · Reserveringen kunnen tot 48 uur voor aankomst worden aangepast een aanbetaling van 50 % bevestigt de boeking',
+    "Gratis annuleren tot 72 uur (3 dagen) voor aankomst. Bij annulering binnen 3 dagen krijgt u 50% van de aanbetaling terug. Bij annulering binnen 24 uur of niet verschijnen wordt 50% van de aanbetaling ingehouden. Een aanbetaling van 30% bevestigt elke boeking; de factuur voor de aanbetaling is 2 dagen geldig. Het resterende bedrag betaalt u bij aankomst.",
   'planPage.faq.airport.q': 'Bieden jullie luchthaventransfers aan?',
   'planPage.faq.airport.a':
     'Ja. Comfortabele, privé-transfers vanaf Kotoka International Airport in Accra · Boek op tijd zodat we je bij aankomst kunnen ontvangen',
@@ -2738,7 +2739,7 @@ const nlBase: Partial<Record<keyof typeof en, string>> = {
   'roomDetail.taxesIncluded': 'Belastingen en ontbijt inbegrepen',
   'roomDetail.reserve': 'Reserveren',
   'roomDetail.askConcierge': 'Vraag het de conciërge',
-  'roomDetail.freeCancellation': 'Gratis annuleren tot 48 uur voor aankomst',
+  'roomDetail.freeCancellation': 'Gratis annuleren tot 3 dagen voor aankomst',
   'roomDetail.otherRooms': 'Andere kamers die je misschien mooi vindt',
   'roomDetail.descFallback':
     'Een ingetogen toevlucht zacht linnen, gevlochten palm, handgedraaide keramiek · Een kamer die ademt op het ritme van het getij',
@@ -2848,7 +2849,7 @@ const nlBase: Partial<Record<keyof typeof en, string>> = {
 
   'bookPage.eyebrow': 'Plan je terugkeer',
   'bookPage.title': 'Boek je verblijf',
-  'bookPage.subtitle': 'Beste prijs, gratis annuleren tot 48 uur, directe bevestiging',
+  'bookPage.subtitle': 'Actuele prijzen, 30% aanbetaling ter bevestiging, gratis annuleren tot 3 dagen voor aankomst',
 
   'book.step.dates': 'Data',
   'book.step.room': 'Kamer',
@@ -2875,7 +2876,7 @@ const nlBase: Partial<Record<keyof typeof en, string>> = {
   'book.nights': 'Nachten',
   'book.nightsUnit': 'nachten',
   'book.total': 'Totaal',
-  'book.taxesLine': 'Belastingen en ontbijt inbegrepen · Gratis annuleren tot 48 uur',
+  'book.taxesLine': 'Belastingen en ontbijt inbegrepen · Gratis annuleren tot 3 dagen voor aankomst',
   'book.doneHeading': 'Akwaaba we hebben je boeking',
   'book.confirmationLabel': 'Bevestiging:',
   'book.doneBody':
@@ -3356,7 +3357,7 @@ const deBase: Partial<Record<keyof typeof en, string>> = {
     'Check-in ab 14:00 Uhr, Check-out bis 11:00 Uhr · Wir sind flexibel, wo wir können frag uns einfach',
   'planPage.faq.cancellation.q': 'Wie ist die Stornierungsregelung?',
   'planPage.faq.cancellation.a':
-    '50 % Rückerstattung bei Stornierung mindestens 20 Tage vor Anreise; danach keine Rückerstattung · Hauptsaisonbuchungen sind nicht erstattungsfähig · Reservierungen können bis 48 Stunden vor Anreise geändert werden eine 50 %-Anzahlung bestätigt die Buchung',
+    "Kostenlose Stornierung bis 72 Stunden (3 Tage) vor Anreise. Bei Stornierung innerhalb von 3 Tagen werden 50 % der Anzahlung erstattet. Bei Stornierung innerhalb von 24 Stunden oder Nichterscheinen werden 50 % der Anzahlung einbehalten. Eine Anzahlung von 30 % bestätigt jede Buchung; die Rechnung für die Anzahlung ist 2 Tage gültig. Der Restbetrag ist bei Anreise fällig.",
   'planPage.faq.airport.q': 'Bietet ihr Flughafentransfers an?',
   'planPage.faq.airport.a':
     'Ja. Komfortable, private Transfers vom Kotoka International Airport in Accra · Bitte rechtzeitig buchen, damit wir dich bei der Ankunft abholen können',
@@ -3447,7 +3448,7 @@ const deBase: Partial<Record<keyof typeof en, string>> = {
   'roomDetail.taxesIncluded': 'Steuern und Frühstück inbegriffen',
   'roomDetail.reserve': 'Reservieren',
   'roomDetail.askConcierge': 'Den Concierge fragen',
-  'roomDetail.freeCancellation': 'Kostenlose Stornierung bis 48 Stunden vor Anreise',
+  'roomDetail.freeCancellation': 'Kostenlose Stornierung bis 3 Tage vor Anreise',
   'roomDetail.otherRooms': 'Weitere Zimmer, die dir gefallen könnten',
   'roomDetail.descFallback':
     'Ein stimmiger Rückzugsort weiches Leinen, geflochtene Palme, handgetöpferte Keramik · Ein Zimmer, das mit den Gezeiten atmet',
@@ -3557,7 +3558,7 @@ const deBase: Partial<Record<keyof typeof en, string>> = {
 
   'bookPage.eyebrow': 'Plane deine Rückkehr',
   'bookPage.title': 'Aufenthalt buchen',
-  'bookPage.subtitle': 'Bestpreis, kostenlose Stornierung bis 48 Stunden, sofortige Bestätigung',
+  'bookPage.subtitle': 'Live-Preise, 30 % Anzahlung zur Bestätigung, kostenlose Stornierung bis 3 Tage vor Anreise',
 
   'book.step.dates': 'Daten',
   'book.step.room': 'Zimmer',
@@ -3584,7 +3585,7 @@ const deBase: Partial<Record<keyof typeof en, string>> = {
   'book.nights': 'Nächte',
   'book.nightsUnit': 'Nächte',
   'book.total': 'Gesamt',
-  'book.taxesLine': 'Steuern und Frühstück inbegriffen · Kostenlose Stornierung bis 48 Stunden',
+  'book.taxesLine': 'Steuern und Frühstück inbegriffen · Kostenlose Stornierung bis 3 Tage vor Anreise',
   'book.doneHeading': 'Akwaaba wir haben deine Buchung',
   'book.confirmationLabel': 'Bestätigung:',
   'book.doneBody':
@@ -3680,6 +3681,18 @@ const zhAll = { ...zh, ...zhRedesign };
 export const dictionaries = { en, fr, es, nl, de, zh: zhAll } as const;
 export type DictKey = keyof typeof en;
 
+/** Admin edits (/admin/pages) win over the built-in wording, language by language. */
 export function translate(locale: Locale, key: DictKey): string {
-  return dictionaries[locale]?.[key] ?? dictionaries.en[key] ?? key;
+  return (
+    textOverride(locale, key) ??
+    dictionaries[locale]?.[key] ??
+    textOverride('en', key) ??
+    dictionaries.en[key] ??
+    key
+  );
+}
+
+/** The built-in wording, ignoring admin edits (used by the page editor). */
+export function builtInText(locale: Locale, key: DictKey): string {
+  return dictionaries[locale]?.[key] ?? '';
 }

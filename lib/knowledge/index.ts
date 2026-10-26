@@ -23,21 +23,32 @@ import { displayCategory } from '@/lib/cms/types';
 import { EXPERIENCE_DETAILS, ESCAPES, RETREAT_TIERS, PACKAGES, TREATMENTS_FALLBACK, formatGhs, roomStartingRateGhs, type EscapeKey, type PackageKey } from '@/lib/pricing';
 import { wa, waUrl } from '@/lib/whatsapp';
 import { site } from '@/lib/site';
+import { loadContent } from '@/lib/content/load';
+import { pageText } from '@/lib/content/page-text';
+import { PAGE_REGISTRY } from '@/lib/content/registry.generated';
+import { listPublicJournalPosts } from '@/lib/cms/journal';
 
-const en = (key: DictKey) => translate('en', key).replace(/\s+·\s+/g, '. ');
+// English wording as full sentences (the dictionaries use " · " between sentences).
+const en = (key: DictKey) => {
+  const s = translate('en', key).replace(/\s+·\s+/g, '. ').trim();
+  // Longer wording reads as sentences; short labels (titles) stay as they are.
+  return s.length > 40 ? s.replace(/([^.!?…”"’)])$/, '$1.') : s;
+};
 
 export interface KnowledgeDoc {
   id: string;
-  category: 'room' | 'experience' | 'wellness' | 'dining' | 'policy' | 'location' | 'faq' | 'amenity' | 'group' | 'event' | 'package';
+  category: 'room' | 'experience' | 'wellness' | 'dining' | 'policy' | 'location' | 'faq' | 'amenity' | 'group' | 'event' | 'package' | 'page';
   title: string;
   content: string;
 }
 
 const link = (label: string, url: string) => `[${label}](${url})`;
-const WA_GENERAL = link('Message us on WhatsApp', waUrl("Hi KoSa! I have a question about my stay."));
+const waGeneral = () => link('Message us on WhatsApp', waUrl("Hi KoSa! I have a question about my stay."));
 
 // ── 1. Confirmed KoSa facts ────────────────────────────────────────────────
-const FACTS: KnowledgeDoc[] = [
+// Built on every refresh so admin edits to the wording are picked up.
+function facts(): KnowledgeDoc[] {
+  return [
   {
     id: 'about',
     category: 'faq',
@@ -98,10 +109,10 @@ const FACTS: KnowledgeDoc[] = [
   },
   {
     id: 'not-offered',
-    category: 'experience',
+    category: 'faq',
     title: 'Turtle walks, paddleboarding and snorkelling',
     content:
-      'KoSa does not offer turtle walks. Paddleboarding and snorkelling are not available yet: they are coming soon. Do not offer or book any of these.',
+      'We don’t offer turtle walks at KoSa. Paddleboarding and snorkelling are coming soon, so they aren’t available just yet. In the meantime there’s beach yoga, drumming, village walks and plenty more.',
   },
   {
     id: 'community',
@@ -119,8 +130,14 @@ const FACTS: KnowledgeDoc[] = [
   {
     id: 'events',
     category: 'event',
-    title: 'Weddings, celebrations and corporate retreats',
-    content: `${en('eventsPage.weddings.body')} ${en('eventsPage.corporate.body')} Enquiries via /events or ${link('WhatsApp', waUrl(wa.group()))}.`,
+    title: 'Weddings and celebrations',
+    content: `${en('eventsPage.weddings.body')} Tell us your date and guest numbers: ${link('plan it on WhatsApp', waUrl(wa.group()))}, or see [Events](/events).`,
+  },
+  {
+    id: 'corporate',
+    category: 'event',
+    title: 'Corporate retreats and team trips',
+    content: `${en('eventsPage.corporate.body')} ${link('Plan a retreat on WhatsApp', waUrl(wa.group()))}, or see [Groups](/groups).`,
   },
   {
     id: 'best-time',
@@ -129,10 +146,11 @@ const FACTS: KnowledgeDoc[] = [
     content: 'November to March is the dry season, with the best beach weather. December and January, around Christmas and New Year, are the busiest weeks, so book early for them. April to October is the rainy season but stays warm, with rain usually in short bursts.',
   },
 ];
+}
 
 // ── 2 & 3. Admin content and Cloudbeds, cached ────────────────────────────
 let cache: { at: number; docs: KnowledgeDoc[] } | null = null;
-const TTL = 10 * 60 * 1000;
+const TTL = 2 * 60 * 1000;
 
 async function safe<T>(p: Promise<T>, fallback: T): Promise<T> {
   try {
@@ -170,7 +188,7 @@ async function buildDynamic(): Promise<KnowledgeDoc[]> {
         r.sizeSqm && `${r.sizeSqm} m².`,
         (r.amenities.length ? r.amenities : r.live?.features ?? []).length && `Features: ${(r.amenities.length ? r.amenities : r.live!.features).join(', ')}.`,
         price + left,
-        `Details: /rooms/${r.slug}. To book, choose dates at /book.`,
+        `[See the room](/rooms/${r.slug}).`,
       ].filter(Boolean).join(' '),
     });
   }
@@ -228,7 +246,7 @@ async function buildDynamic(): Promise<KnowledgeDoc[]> {
       id: `package-${p.slug}`,
       category: 'package',
       title: `${p.name} package`,
-      content: `${p.tagline}. ${p.category}, ${p.durationLabel}. From ${formatGhs(p.priceGhs)} ${p.priceNote}${p.couplePriceGhs ? `, ${formatGhs(p.couplePriceGhs)} ${p.couplePriceNote ?? 'for two'}` : ''}. Includes: ${p.inclusions.join(', ')}. ${link(`Enquire about ${p.name}`, waUrl(wa.stayPackage({ name: p.name, durationLabel: p.durationLabel, priceGhs: p.priceGhs, inclusions: p.inclusions.slice(0, 4).join(', ') })))}`,
+      content: `${p.tagline.replace(/\.$/, '')}. ${p.durationLabel}, from ${formatGhs(p.priceGhs)}${p.priceNote ? ` (${p.priceNote.toLowerCase()})` : ''}${p.couplePriceGhs ? `, or ${formatGhs(p.couplePriceGhs)} ${p.couplePriceNote ?? 'for two'}` : ''}. Includes ${p.inclusions.join(', ').toLowerCase()}. ${link(`Enquire about ${p.name}`, waUrl(wa.stayPackage({ name: p.name, durationLabel: p.durationLabel, priceGhs: p.priceGhs, inclusions: p.inclusions.slice(0, 4).join(', ') })))}`,
     });
   }
   for (const k of Object.keys(PACKAGES) as PackageKey[]) {
@@ -276,9 +294,87 @@ async function buildDynamic(): Promise<KnowledgeDoc[]> {
   return docs;
 }
 
+// ── 4. Everything else the site says ─────────────────────────────────────
+// Contact details, what a stay includes, every FAQ, and the wording of each
+// page (with admin edits), so Abena can answer anything that is on the website.
+
+function extraFacts(): KnowledgeDoc[] {
+  const c = site.contact;
+  const docs: KnowledgeDoc[] = [
+    {
+      id: 'contact',
+      category: 'faq',
+      title: 'Contact KoSa: phone, WhatsApp, email and address',
+      content: `You can reach the KoSa team on WhatsApp or by phone on ${c.phone}, or by email at ${c.email}. The address is ${c.address}. ${waGeneral()}`,
+    },
+    {
+      id: 'included',
+      category: 'policy',
+      title: 'What is included in a stay',
+      content: `${translate('en', 'book.taxesLine').split('·')[0].trim()}. Resort guests also enjoy the free weekly programme of activities, such as beach yoga, beach walks, Twi lessons, drumming lessons and village tours. Spa treatments, excursions, private dining and transfers are extras you can book on WhatsApp.`,
+    },
+  ];
+  // Every FAQ on the Plan your visit page, as its own answer.
+  const used = new Set(['checkin', 'cancellation', 'children', 'halal', 'swim', 'airport']);
+  for (const f of PAGE_REGISTRY.find((p) => p.id === 'plan')?.fields ?? []) {
+    const m = f.key.match(/^planPage\.faq\.([a-zA-Z0-9]+)\.q$/);
+    if (!m || used.has(m[1])) continue;
+    const q = en(f.key as DictKey);
+    const a = en(`planPage.faq.${m[1]}.a` as DictKey);
+    if (q && a && !a.startsWith('planPage.')) docs.push({ id: `faq-${m[1]}`, category: 'faq', title: q, content: a });
+  }
+  return docs;
+}
+
+async function storyDocs(): Promise<KnowledgeDoc[]> {
+  const posts = await safe(listPublicJournalPosts(), []);
+  return posts.map((p) => ({
+    id: `story-${p.slug}`,
+    category: 'faq' as const,
+    title: `Journal story: ${p.title}`,
+    content: `${p.excerpt ?? ''} [Read the story](/blog/${p.slug})`.trim(),
+  }));
+}
+
+const SKIP_PAGES = new Set(['site', 'not-found', 'book', 'privacy']);
+const SKIP_KEYS = /^(alt|a11y|nav|common|chat|newsletter|exit|emailCapture|sea|menu|voices|testimonials)\.|\.(cta|book|enquire|discover|prev|next|close|free|eyebrow)$/;
+
+/** Page wording, one document per page section, linked to that page. */
+function siteWording(): KnowledgeDoc[] {
+  const docs: KnowledgeDoc[] = [];
+  for (const page of PAGE_REGISTRY) {
+    if (SKIP_PAGES.has(page.id)) continue;
+    const bySection = new Map<string, string[]>();
+    for (const f of page.fields) {
+      let text = '';
+      if (f.kind === 'text') {
+        if (SKIP_KEYS.test(f.key) || f.key.startsWith('planPage.faq.')) continue;
+        text = en(f.key as DictKey);
+      } else if (f.key.startsWith('text.') && !/(Button|Eyebrow|eyebrow|updated)$/.test(f.key)) {
+        const [, group, field] = f.key.split('.');
+        const v = (pageText as unknown as Record<string, Record<string, unknown>>)[group]?.[field];
+        text = typeof v === 'string' ? v.replace(/^## /gm, '').replace(/\*\*/g, '') : '';
+      }
+      if (!text || text.length < 25 || text === f.key) continue;
+      bySection.set(f.section, [...(bySection.get(f.section) ?? []), text]);
+    }
+    for (const [section, texts] of bySection) {
+      const path = page.path === '/rooms' && page.id === 'room' ? '/rooms' : page.path;
+      docs.push({
+        id: `page-${page.id}-${section}`,
+        category: 'page',
+        title: `${page.label}: ${section}`,
+        content: `${texts.map((t) => t.replace(/\s+·\s+/g, '. ').trim().replace(/([^.!?])$/, '$1.')).join(' ')} More on [${page.label}](${path}).`,
+      });
+    }
+  }
+  return docs;
+}
+
 export async function getKnowledge(): Promise<KnowledgeDoc[]> {
   if (cache && Date.now() - cache.at < TTL) return cache.docs;
-  const docs = [...FACTS, ...(await buildDynamic())];
+  await loadContent();
+  const docs = [...facts(), ...extraFacts(), ...(await buildDynamic()), ...(await storyDocs()), ...siteWording()];
   cache = { at: Date.now(), docs };
   return docs;
 }
@@ -288,7 +384,7 @@ export function roomIndex(docs: KnowledgeDoc[]) {
   return docs.filter((d) => d.category === 'room').map((d) => `- ${d.title}`).join('\n');
 }
 
-export const FALLBACK_CONTACT = WA_GENERAL;
+export const FALLBACK_CONTACT_LINK = waGeneral;
 
 // ── Retrieval ──────────────────────────────────────────────────────────────
 const STOPWORDS = new Set(

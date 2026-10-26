@@ -5,9 +5,16 @@
 
 const SUPA = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ubsgvfouroqkgqufzeat.supabase.co';
 export const BUCKET_BASE = `${SUPA}/storage/v1/object/public/kosa-public`;
+import { overridable, registerMediaDefaults } from './store';
+
 const m = (p: string) => `${BUCKET_BASE}/${p}`;
 
-export const media = {
+const rawMedia = {
+  /** Home hero film. Empty shows the banner photo. */
+  heroVideo: '' as string,
+  /** Welcome Home film on the home page. */
+  welcomeVideo: '/media/video/kosa-welcome-home.mp4' as string,
+  welcomePoster: '/media/video/welcome-home-poster.webp' as string,
   banner: m('media/banner/banner1.webp'),
   feeling: m('media/feeling/slowing-down-guests.webp'),
   about: m('media/about/about-hero-kosa-scenery.webp'),
@@ -71,7 +78,15 @@ export const media = {
     deluxeTwinSea: m('rooms/deluxe-twin-sea-view/01.webp'),
     deluxeDoubleSea: m('rooms/deluxe-double-sea-view/0-DDRWSV.webp'),
   },
-} as const;
+};
+
+registerMediaDefaults(rawMedia);
+
+/** The built-in photos, ignoring admin edits. */
+export const mediaDefaults = rawMedia;
+
+/** Every editorial photo and film on the public pages. Admin edits (/admin/pages) win. */
+export const media = overridable('media', rawMedia);
 
 /** Turn the old " · " sentence separators into real sentences. */
 export function prose(text: string | null | undefined): string {

@@ -9,12 +9,11 @@ import { Play } from 'lucide-react';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { Tide } from '@/components/ui/Tide';
 import { useT } from '@/lib/i18n';
-import { prose } from '@/lib/content/media';
-
-const VIDEO = '/media/video/kosa-welcome-home.mp4';
-const POSTER = '/media/video/welcome-home-poster.webp';
+import { media, prose } from '@/lib/content/media';
 
 export function Homecoming() {
+  const VIDEO = media.welcomeVideo;
+  const POSTER = media.welcomePoster;
   const { t } = useT();
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);

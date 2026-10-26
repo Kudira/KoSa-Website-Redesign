@@ -148,7 +148,7 @@ export default async function AdminHome() {
             </li>
             <li>
               Google Drive (virtual tour):{' '}
-              {process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT ? '✓ Connected' : 'using fallback scenes'}
+              {process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT ? '✓ Connected' : 'no scenes yet (add them in Virtual Tour)'}
             </li>
           </ul>
         </div>

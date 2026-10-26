@@ -27,8 +27,8 @@ const WHY = [1, 2, 3, 4].map((n) => ({
 const TERMS: DictKey[] = ['groups.terms.discount', 'groups.terms.commission', 'groups.terms.drivers', 'groups.terms.cashless'];
 const WELCOME = [1, 2, 3, 4, 5, 6].map((n) => `groups.welcome.${n}`) as DictKey[];
 
-export default function GroupsPage() {
-  const { t } = getT();
+export default async function GroupsPage() {
+  const { t } = await getT();
 
   const guideButton = GUIDE ? (
     <a href={GUIDE} download="KoSa Group Guide 2026-27.pdf" className="inline-flex h-12 items-center gap-2.5 rounded-full px-6 font-semibold ring-1 ring-inset ring-forest/25 transition-colors hover:bg-forest hover:text-cream">

@@ -79,7 +79,7 @@ export function RoomForm({ initial }: { initial?: Partial<RoomFormValues> }) {
         category: values.category,
         description: values.description || null,
         price: Number(values.price),
-        currency: values.currency.toUpperCase(),
+        currency: 'GHS',
         maxGuests: Number(values.maxGuests),
         bedConfig: values.bedConfig || null,
         sizeSqm: values.sizeSqm === '' ? null : Number(values.sizeSqm),
@@ -194,18 +194,12 @@ export function RoomForm({ initial }: { initial?: Partial<RoomFormValues> }) {
                 type="number"
                 step="0.01"
                 min="0"
-                label="Price / night"
+                label="Backup price per night (GHS)"
                 name="price"
                 value={values.price}
                 onChange={(e) => set('price', Number(e.target.value))}
+                hint="The website shows tonight's live Cloudbeds price. This one is used only when Cloudbeds has no price for the room. 0 uses the rate sheet price."
                 required
-              />
-              <TextField
-                label="Currency"
-                name="currency"
-                value={values.currency}
-                onChange={(e) => set('currency', e.target.value.toUpperCase())}
-                maxLength={3}
               />
               <TextField
                 type="number"

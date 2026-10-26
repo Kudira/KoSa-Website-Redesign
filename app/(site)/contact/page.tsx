@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function ContactPage() {
-  const { t } = getT();
+export default async function ContactPage() {
+  const { t } = await getT();
   const wa = `${site.socials.whatsapp}?text=${encodeURIComponent(site.contact.whatsappMessage)}`;
   const ways = [
     { icon: MessageCircle, label: t('contactPage.whatsappUs'), value: site.contact.phone, href: wa, external: true },

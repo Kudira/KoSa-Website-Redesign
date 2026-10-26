@@ -58,7 +58,7 @@ const FAQS = [
 ] as const;
 
 export default async function PlanPage() {
-  const { t } = getT();
+  const { t } = await getT();
   const [experiences, stayPackages] = await Promise.all([
     listPublicExperiences(),
     listPublicWellnessPackages().catch(() => []),

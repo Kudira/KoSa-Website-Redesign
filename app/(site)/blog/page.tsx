@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 const HERO = 'https://ubsgvfouroqkgqufzeat.supabase.co/storage/v1/object/public/kosa-public/media/beach/beach-shots-img_3787.webp';
 
 export default async function BlogIndex() {
-  const { t } = getT();
+  const { t } = await getT();
   const posts = await listPublicJournalPosts();
   const [lead, ...rest] = posts;
 

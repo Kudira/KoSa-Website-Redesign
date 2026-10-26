@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function RoomsPage() {
-  const { t } = getT();
+  const { t } = await getT();
   const [rooms, pricing] = await Promise.all([listRoomsWithLive(), getSetting('pricing')]);
   const showPrices = !pricing.hideRoomPrices;
   const wa = `${site.socials.whatsapp}?text=${encodeURIComponent(site.contact.whatsappMessage)}`;

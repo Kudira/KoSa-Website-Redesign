@@ -12,8 +12,9 @@ import '@fontsource-variable/figtree/index.css';
 import '../styles/globals.css';
 import { site } from '@/lib/site';
 import { Providers } from '@/components/providers/Providers';
+import { loadContent } from '@/lib/content/load';
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
     default: `${site.name} · Ghana's coastal retreat for the soul`,
@@ -61,6 +62,21 @@ export const metadata: Metadata = {
   },
 };
 
+/** Admin > Settings > SEO & branding wins over the built-in title, description and share image. */
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await loadContent();
+  const title = seo.siteTitle?.trim();
+  const description = seo.siteDescription?.trim() || site.description;
+  const image = seo.ogImage?.trim() || '/og/og-default.jpg';
+  return {
+    ...baseMetadata,
+    ...(title ? { title: { default: title, template: `%s · ${site.name}` } } : {}),
+    description,
+    openGraph: { ...baseMetadata.openGraph, ...(title ? { title } : {}), description, images: [{ url: image, width: 1200, height: 630, alt: site.name }] },
+    twitter: { ...baseMetadata.twitter, ...(title ? { title } : {}), description, images: [image], ...(seo.twitterHandle ? { site: seo.twitterHandle } : {}) },
+  };
+}
+
 export const viewport: Viewport = {
   themeColor: '#007C9D',
   width: 'device-width',
@@ -68,17 +84,27 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const gtm = process.env.NEXT_PUBLIC_GTM_ID;
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const content = await loadContent();
+  const gtm = content.flags.googleTagManagerId || process.env.NEXT_PUBLIC_GTM_ID;
+  const ga = content.flags.googleAnalyticsId;
   return (
     <html lang="en">
       <body className="min-h-screen antialiased font-sans">
-        <Providers>{children}</Providers>
+        <Providers content={content}>{children}</Providers>
         <Analytics />
-        {gtm && (
+        {gtm && /^GTM-[A-Z0-9]+$/i.test(gtm) && (
           <Script id="gtm" strategy="lazyOnload">
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtm}');`}
           </Script>
+        )}
+        {ga && /^G-[A-Z0-9]+$/i.test(ga) && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${ga}`} strategy="lazyOnload" />
+            <Script id="ga" strategy="lazyOnload">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga}');`}
+            </Script>
+          </>
         )}
       </body>
     </html>

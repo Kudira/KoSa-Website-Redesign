@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ExperienceDetail({ params }: Props) {
   const e = await getPublicExperienceBySlug(params.slug);
   if (!e) notFound();
-  const { t } = getT();
+  const { t } = await getT();
 
   return (
     <>

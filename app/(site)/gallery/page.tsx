@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function GalleryPage() {
-  const { t } = getT();
+  const { t } = await getT();
   const items = await listPublicGallery();
   return (
     <>

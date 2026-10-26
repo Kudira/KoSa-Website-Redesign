@@ -6,6 +6,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/admin/auth';
 import { settingsKeySchemas, isSettingsKey } from '@/lib/admin/schemas/settings';
+import { invalidateContent } from '@/lib/content/load';
 import { badRequest, notFound, ok, serverError, zodError } from '@/lib/admin/response';
 
 export const runtime = 'nodejs';
@@ -55,6 +56,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
         updatedBy: guard.user.id,
       },
     });
+    invalidateContent();
     return ok({ key: row.key, value: row.value });
   } catch (e) {
     return serverError((e as Error).message);

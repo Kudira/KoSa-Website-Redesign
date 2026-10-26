@@ -41,8 +41,8 @@ const STARS = Array.from({ length: 28 }, (_, i) => {
   return { x: r(1) * 100, y: r(2) * 55, s: r(3) > 0.7 ? 2.5 : 1.5 };
 });
 
-export default function AboutPage() {
-  const { t } = getT();
+export default async function AboutPage() {
+  const { t } = await getT();
   const wa = `${site.socials.whatsapp}?text=${encodeURIComponent(site.contact.whatsappMessage)}`;
 
   return (

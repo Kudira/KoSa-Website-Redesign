@@ -26,7 +26,7 @@ async function getScenes(): Promise<Scene[]> {
 }
 
 export default async function VirtualTourPage() {
-  const { t } = getT();
+  const { t } = await getT();
   const scenes = await getScenes();
   return (
     <>

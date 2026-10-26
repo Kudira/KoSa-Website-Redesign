@@ -1,3 +1,5 @@
+import { contactOverride } from '@/lib/content/store';
+
 // Site-level configuration. Keep aligned with KOSA Brand Guide + Website
 // Content Brief. The nav structure here drives Navbar, Footer and the
 // AdminShell's "View site" link.
@@ -17,24 +19,24 @@ export const site = {
   // points here for now (opens in a new tab). Swap this single value when the
   // native booking flow goes live.
   bookingUrl: 'https://us2.cloudbeds.com/en/reservation/65CAqa?currency=ghs',
+  // Contact details and social links. Admin > Settings > Contact & social wins over these.
   contact: {
-    email: 'info@ko-sa.com',
-    phone: '+233 24 437 5432',
-    whatsapp: '233244375432',
+    get email() { return contactOverride('email', 'info@ko-sa.com'); },
+    get phone() { return contactOverride('phone', '+233 24 437 5432'); },
+    get whatsapp() { return contactOverride('whatsapp', '233244375432').replace(/[^\d]/g, ''); },
     whatsappMessage: "Hi KoSa! I'd like to find out more about booking a stay",
-    address: 'Beach Road No.1, Ampenyi, Elmina, Ghana',
+    get address() { return contactOverride('address', 'Beach Road No.1, Ampenyi, Elmina, Ghana'); },
   },
   socials: {
-    instagram: 'https://www.instagram.com/kosabeachresort',
-    facebook: 'https://www.facebook.com/kosabeachresort',
-    tripadvisor: 'https://www.tripadvisor.com/Hotel_Review-Ko-Sa-Beach-Resort',
-    whatsapp: 'https://wa.me/233244375432',
+    get instagram() { return contactOverride('instagram', 'https://www.instagram.com/kosabeachresort'); },
+    get facebook() { return contactOverride('facebook', 'https://www.facebook.com/kosabeachresort'); },
+    get tripadvisor() { return contactOverride('tripadvisor', 'https://www.tripadvisor.com/Hotel_Review-Ko-Sa-Beach-Resort'); },
+    get whatsapp() { return `https://wa.me/${site.contact.whatsapp}`; },
   },
   reviews: {
-    google: { score: 4.8, max: 5, url: 'https://maps.google.com/?cid=ko-sa-beach-resort' },
-    booking: { score: 9.1, max: 10, url: 'https://booking.com/hotel/gh/ko-sa-beach-resort' },
-    tripadvisor: { score: 4.7, max: 5, url: 'https://www.tripadvisor.com/Hotel_Review-Ko-Sa-Beach-Resort' },
-    totalGuests: 5000,
+    google: { get url() { return contactOverride('googleReviews', 'https://www.google.com/maps/search/?api=1&query=KoSa+Beach+Resort+Ampenyi'); } },
+    booking: { get url() { return contactOverride('bookingReviews', 'https://www.booking.com/searchresults.html?ss=KoSa+Beach+Resort+Ampenyi'); } },
+    tripadvisor: { get url() { return contactOverride('tripadvisor', 'https://www.tripadvisor.com/Hotel_Review-Ko-Sa-Beach-Resort'); } },
   },
   // Primary navigation. Experiences stays a top-level item; the secondary
   // destinations (Events, Gallery, Journal, Virtual Tour, Contact) live in an

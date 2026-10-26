@@ -6,8 +6,8 @@ import { prose } from '@/lib/content/media';
 
 // "Lost at sea". Rendered outside the site chrome, so it carries its own
 // logo and a wave to stand on.
-export default function NotFound() {
-  const { t } = getT();
+export default async function NotFound() {
+  const { t } = await getT();
   return (
     <main className="relative min-h-[100svh] flex flex-col bg-teal-600 text-cream overflow-hidden">
       <div className="container-page pt-10">

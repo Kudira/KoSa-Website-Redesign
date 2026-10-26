@@ -28,8 +28,7 @@ import {
   Package,
   Gift,
   PartyPopper,
-  ClipboardList,
-} from 'lucide-react';
+  ClipboardList, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Group = {
@@ -55,6 +54,7 @@ const groups: Group[] = [
   {
     label: 'Content',
     links: [
+      { href: '/admin/pages', label: 'Pages (words & photos)', icon: FileText },
       { href: '/admin/rooms', label: 'Rooms', icon: Hotel },
       { href: '/admin/wellness', label: 'Spa Treatments', icon: Sparkles },
       { href: '/admin/wellness-packages', label: 'Stay Packages', icon: Package },

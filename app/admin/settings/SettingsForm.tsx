@@ -9,26 +9,25 @@ import { MediaPickerSingle } from '@/components/admin/MediaPicker';
 import { useToast } from '@/components/admin/Toast';
 import { cn } from '@/lib/utils';
 
-type SectionKey = 'hero' | 'contact' | 'seo' | 'integrations' | 'pricing' | 'maintenance';
+type SectionKey = 'contact' | 'seo' | 'integrations' | 'pricing' | 'maintenance';
 
 interface Props {
   initial: Record<SectionKey, Record<string, unknown>>;
 }
 
 const SECTIONS: { key: SectionKey; label: string; description: string }[] = [
-  { key: 'hero', label: 'Hero', description: 'Headline, tagline and CTAs on the home page.' },
-  { key: 'contact', label: 'Contact & social', description: 'Email, phone, address, social profiles.' },
-  { key: 'seo', label: 'SEO & branding', description: 'Default meta titles, OG image, social handles.' },
-  { key: 'integrations', label: 'Integrations', description: 'Property IDs, analytics IDs, feature toggles.' },
+  { key: 'contact', label: 'Contact & social', description: 'Email, phone, WhatsApp, address and links, used everywhere on the site.' },
+  { key: 'seo', label: 'SEO & sharing', description: 'Title and description for Google, and the image shown when the site is shared.' },
+  { key: 'integrations', label: 'Features & analytics', description: 'Switch Abena or the newsletter on or off; Google Analytics.' },
   { key: 'pricing', label: 'Pricing visibility', description: 'Show or hide prices on the public website.' },
-  { key: 'maintenance', label: 'Maintenance', description: 'Temporarily display a maintenance banner.' },
+  { key: 'maintenance', label: 'Notice banner', description: 'A short message across the top of every page.' },
 ];
 
 export function SettingsForm({ initial }: Props) {
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
-  const [active, setActive] = useState<SectionKey>('hero');
+  const [active, setActive] = useState<SectionKey>('contact');
   const [busy, setBusy] = useState(false);
   const [values, setValues] = useState<Record<SectionKey, Record<string, unknown>>>(initial);
 
@@ -77,7 +76,6 @@ export function SettingsForm({ initial }: Props) {
       </nav>
 
       <div className="bg-cream border border-warm-grey/40 rounded-md p-6 space-y-4">
-        {active === 'hero' && <HeroSection values={values.hero} onChange={(f, v) => update('hero', f, v)} />}
         {active === 'contact' && <ContactSection values={values.contact} onChange={(f, v) => update('contact', f, v)} />}
         {active === 'seo' && <SeoSection values={values.seo} onChange={(f, v) => update('seo', f, v)} />}
         {active === 'integrations' && (
@@ -108,32 +106,6 @@ function asBool(v: unknown, fallback = false) {
   return typeof v === 'boolean' ? v : fallback;
 }
 
-function HeroSection({
-  values,
-  onChange,
-}: {
-  values: Record<string, unknown>;
-  onChange: (field: string, v: unknown) => void;
-}) {
-  return (
-    <div className="space-y-4">
-      <h2 className="font-belleza text-xl text-umber">Hero</h2>
-      <TextField label="Headline" name="headline" value={asStr(values.headline)} onChange={(e) => onChange('headline', e.target.value)} />
-      <TextField label="Tagline" name="tagline" value={asStr(values.tagline)} onChange={(e) => onChange('tagline', e.target.value)} />
-      <TextField label="Location line" name="location" value={asStr(values.location)} onChange={(e) => onChange('location', e.target.value)} />
-      <TextField label="Booking nudge under the hero (e.g. a seasonal line; leave empty for the default)" name="urgency" value={asStr(values.urgency)} onChange={(e) => onChange('urgency', e.target.value)} />
-      <MediaPickerSingle label="Hero poster image" name="posterUrl" value={asStr(values.posterUrl)} onChange={(v) => onChange('posterUrl', v)} folder="hero" />
-      <TextField label="Hero video URL (optional)" name="videoUrl" value={asStr(values.videoUrl)} onChange={(e) => onChange('videoUrl', e.target.value)} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TextField label="Primary CTA label" name="ctaPrimaryLabel" value={asStr(values.ctaPrimaryLabel)} onChange={(e) => onChange('ctaPrimaryLabel', e.target.value)} />
-        <TextField label="Primary CTA href" name="ctaPrimaryHref" value={asStr(values.ctaPrimaryHref)} onChange={(e) => onChange('ctaPrimaryHref', e.target.value)} />
-        <TextField label="Secondary CTA label" name="ctaSecondaryLabel" value={asStr(values.ctaSecondaryLabel)} onChange={(e) => onChange('ctaSecondaryLabel', e.target.value)} />
-        <TextField label="Secondary CTA href" name="ctaSecondaryHref" value={asStr(values.ctaSecondaryHref)} onChange={(e) => onChange('ctaSecondaryHref', e.target.value)} />
-      </div>
-    </div>
-  );
-}
-
 function ContactSection({ values, onChange }: { values: Record<string, unknown>; onChange: (f: string, v: unknown) => void }) {
   return (
     <div className="space-y-4">
@@ -145,8 +117,10 @@ function ContactSection({ values, onChange }: { values: Record<string, unknown>;
         <TextField label="Instagram URL" name="instagram" value={asStr(values.instagram)} onChange={(e) => onChange('instagram', e.target.value)} />
         <TextField label="Facebook URL" name="facebook" value={asStr(values.facebook)} onChange={(e) => onChange('facebook', e.target.value)} />
         <TextField label="TripAdvisor URL" name="tripadvisor" value={asStr(values.tripadvisor)} onChange={(e) => onChange('tripadvisor', e.target.value)} />
-        <TextField label="YouTube URL" name="youtube" value={asStr(values.youtube)} onChange={(e) => onChange('youtube', e.target.value)} />
+        <TextField label="Google reviews link" name="googleReviews" value={asStr(values.googleReviews)} onChange={(e) => onChange('googleReviews', e.target.value)} hint="Shown in the footer" />
+        <TextField label="Booking.com page link" name="bookingReviews" value={asStr(values.bookingReviews)} onChange={(e) => onChange('bookingReviews', e.target.value)} hint="Shown in the footer" />
       </div>
+      <p className="text-xs text-umber/60">Leave a field empty to keep what the website shows now. Changes appear on the site within about 15 seconds.</p>
       <TextareaField label="Address" name="address" rows={2} value={asStr(values.address)} onChange={(e) => onChange('address', e.target.value)} />
     </div>
   );
@@ -185,20 +159,16 @@ function IntegrationsSection({
   return (
     <div className="space-y-4">
       <h2 className="font-belleza text-xl text-umber">Integrations</h2>
-      <TextField label="Cloudbeds property ID" name="cloudbedsPropertyId" value={asStr(values.cloudbedsPropertyId)} onChange={(e) => onChange('cloudbedsPropertyId', e.target.value)} />
-      <TextField type="email" label="Resend 'from' email" name="resendFromEmail" value={asStr(values.resendFromEmail)} onChange={(e) => onChange('resendFromEmail', e.target.value)} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TextField label="Google Analytics ID" name="googleAnalyticsId" value={asStr(values.googleAnalyticsId)} onChange={(e) => onChange('googleAnalyticsId', e.target.value)} />
-        <TextField label="GTM container ID" name="googleTagManagerId" value={asStr(values.googleTagManagerId)} onChange={(e) => onChange('googleTagManagerId', e.target.value)} />
+         <TextField label="Google Analytics ID" hint="Starts with G-" name="googleAnalyticsId" value={asStr(values.googleAnalyticsId)} onChange={(e) => onChange('googleAnalyticsId', e.target.value)} />
+        <TextField label="Google Tag Manager ID" hint="Starts with GTM-" name="googleTagManagerId" value={asStr(values.googleTagManagerId)} onChange={(e) => onChange('googleTagManagerId', e.target.value)} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        {toggleRow('Booking enabled', 'bookingEnabled')}
-        {toggleRow('Chat enabled', 'chatEnabled')}
-        {toggleRow('Newsletter enabled', 'newsletterEnabled')}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {toggleRow('Abena chat on the website', 'chatEnabled')}
+        {toggleRow('Newsletter sign-up (footer and pop-up)', 'newsletterEnabled')}
       </div>
       <p className="text-xs text-umber/60">
-        Note: API keys and other secrets are read from environment variables they're never stored in
-        the database.
+        Cloudbeds, email and other keys live in Vercel environment variables, never here.
       </p>
     </div>
   );
@@ -262,7 +232,7 @@ function MaintenanceSection({
 }) {
   return (
     <div className="space-y-4">
-      <h2 className="font-belleza text-xl text-umber">Maintenance mode</h2>
+      <h2 className="font-belleza text-xl text-umber">Notice banner</h2>
       <label className="flex items-center gap-3">
         <input
           type="checkbox"

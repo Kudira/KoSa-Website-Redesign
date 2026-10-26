@@ -10,6 +10,7 @@ import { wa } from '@/lib/whatsapp';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { BookButton } from '@/components/shared/BookButton';
 import { formatGhs, RETREAT_TRACKS, type RetreatTrackKey } from '@/lib/pricing';
+import { pageText } from '@/lib/content/page-text';
 
 const TRACK_ORDER: RetreatTrackKey[] = ['rotation', 'him', 'her'];
 const TRACK_LABEL: Record<RetreatTrackKey, string> = {
@@ -79,13 +80,13 @@ export function RetreatRhythm() {
           <div className="flex flex-wrap justify-center gap-10 mt-12 pt-8 border-t border-cream/15 text-center">
             <div>
               <p className="font-sans text-sm text-cream/50 mb-1.5">
-                Spa Journey
+                {pageText.wellness.trackSpaLabel}
               </p>
               <p className="font-display text-2xl text-sunshine">{formatGhs(track.spaGhs)}</p>
             </div>
             <div>
               <p className="font-sans text-sm text-cream/50 mb-1.5">
-                With 3 Nights&rsquo; Stay
+                {pageText.wellness.trackStayLabel}
               </p>
               <p className="font-display text-2xl text-sunshine">{formatGhs(track.totalGhs)}</p>
             </div>
@@ -93,7 +94,7 @@ export function RetreatRhythm() {
 
           {track.oneDayGhs && (
             <p className="text-center mt-5 font-sans text-sm text-cream/55">
-              Also available as a One-Day Escape — {formatGhs(track.oneDayGhs)}.
+              {pageText.wellness.trackOneDay}: {formatGhs(track.oneDayGhs)}.
             </p>
           )}
 
@@ -105,7 +106,7 @@ export function RetreatRhythm() {
               source="wellness/retreats"
               className="inline-flex items-center gap-2 rounded-full bg-sunshine text-teal-900 font-sans text-sm px-8 py-3.5 hover:bg-sunshine-600 transition-colors"
             >
-              Enquire About This Retreat
+              {pageText.wellness.trackButton}
             </BookButton>
           </div>
         </motion.div>

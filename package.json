@@ -25,7 +25,8 @@
     "seed:media": "tsx scripts/seed-kosa-media.ts",
     "seed:reviews": "tsx scripts/seed-reviews.ts",
     "seed:journal": "tsx scripts/seed-journal.ts",
-    "sitemap": "next-sitemap"
+    "sitemap": "next-sitemap",
+    "pages:registry": "tsx scripts/build-page-registry.ts"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.3.0",

@@ -38,7 +38,7 @@ const fmt = (d: Date, locale: string) =>
   new Intl.DateTimeFormat(locale === 'zh' ? 'zh-CN' : locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
 
 export default async function ConfirmedPage({ searchParams }: { searchParams: { ref?: string } }) {
-  const { t, locale } = getT();
+  const { t, locale } = await getT();
   const { state, b } = await load(searchParams.ref ?? '');
   const title = t(`booked.${state}Title` as DictKey);
   const body = t(`booked.${state}Body` as DictKey).replace('{email}', b?.guestEmail ?? '');

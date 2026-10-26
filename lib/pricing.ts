@@ -1,3 +1,4 @@
+import { overridable } from '@/lib/content/store';
 // ─────────────────────────────────────────────────────────────────────────────
 // KoSa pricing & bookable-content config (Website Change Request, June 2026)
 //
@@ -28,7 +29,7 @@ export function formatGhs(amount: number): string {
 // ── Room starting rates (GHS / night) ───────────────────────────────────────
 // Keyed by room slug (see scripts/seed-kosa-rooms.ts). Confirmed rates from
 // the official Rooms & Rates sheet (June 2026).
-export const ROOM_RATES_GHS: Record<string, number> = {
+export const RAW_ROOM_RATES_GHS: Record<string, number> = {
   'luxury-double-sea-view': 1275,
   'deluxe-double-sea-view': 1425,
   'deluxe-twin-sea-view': 1275,
@@ -60,7 +61,7 @@ export function roomFromPerNight(slug: string, dbPrice?: number): string {
 // ── Sample-itinerary packages (home + plan) ─────────────────────────────────
 export type PackageKey = 'weekend' | 'short' | 'full';
 
-export const PACKAGES: Record<
+export const RAW_PACKAGES: Record<
   PackageKey,
   { nights: number; fromGhs: number; inclusions: string }
 > = {
@@ -128,7 +129,7 @@ export function treatmentPriceGhs(slug: string, dbPrice?: number): number {
 // proposal built with Doc's clinical guidance (internal PDF, July 2026).
 export type EscapeKey = 'detox' | 'relaxation' | 'beauty';
 
-export const ESCAPES: Record<
+export const RAW_ESCAPES: Record<
   EscapeKey,
   { name: string; theme: string; items: { name: string; ghs: number }[]; originalGhs: number; priceGhs: number }
 > = {
@@ -176,7 +177,7 @@ export const ESCAPES: Record<
 // Multi-day tiers: Relaxation → Detox → Beauty rotation, room + full board
 // included throughout. spaGhs = treatments only, totalGhs = incl. nights.
 export type RetreatTier = { days: number; rotation: string; spaGhs: number; totalGhs: number };
-export const RETREAT_TIERS: RetreatTier[] = [
+export const RAW_RETREAT_TIERS: RetreatTier[] = [
   { days: 3, rotation: 'Relaxation · Detox · Beauty', spaGhs: 3440, totalGhs: 7265 },
   { days: 7, rotation: 'Relaxation ×3 · Detox ×2 · Beauty ×2', spaGhs: 7340, totalGhs: 16265 },
   { days: 10, rotation: 'Relaxation ×4 · Detox ×3 · Beauty ×3', spaGhs: 9960, totalGhs: 22710 },
@@ -186,7 +187,7 @@ export const RETREAT_TIERS: RetreatTier[] = [
 // gendered 3-day journeys (Tide Reset / Saltwater Bloom).
 export type RetreatTrackKey = 'rotation' | 'him' | 'her';
 export type RetreatDay = { label: string; title: string; sense: string; items: string };
-export const RETREAT_TRACKS: Record<
+export const RAW_RETREAT_TRACKS: Record<
   RetreatTrackKey,
   { for: string; name: string; sense: string; days: RetreatDay[]; spaGhs: number; totalGhs: number; oneDayGhs?: number }
 > = {
@@ -277,7 +278,7 @@ export const RETREAT_TRACKS: Record<
 
 // ── Signature experiences (duration + GHS per person) ────────────────────────
 // Keyed to the dictionary "experiencesPage.signature.*" tiles.
-export const EXPERIENCE_DETAILS: Record<string, { duration: string; fromGhs: number }> = {
+export const RAW_EXPERIENCE_DETAILS: Record<string, { duration: string; fromGhs: number }> = {
   ampenyi: { duration: 'Half day · 3 hours', fromGhs: 180 },
   capeCoast: { duration: 'Full day · 8 hours', fromGhs: 550 },
   elmina: { duration: 'Half day · 4 hours', fromGhs: 420 },
@@ -305,3 +306,12 @@ export const waPrefill = {
   consultation: () =>
     "Hi KoSa! I'd like to book a Private Wellness Consultation to design my own O2 Spa retreat.",
 };
+
+// ── Admin-editable copies ────────────────────────────────────────────────────
+// The numbers above are the built-in defaults; /admin/pages can change any of them.
+export const ROOM_RATES_GHS = overridable('pricing.ROOM_RATES_GHS', RAW_ROOM_RATES_GHS);
+export const PACKAGES = overridable('pricing.PACKAGES', RAW_PACKAGES);
+export const ESCAPES = overridable('pricing.ESCAPES', RAW_ESCAPES);
+export const RETREAT_TIERS = overridable('pricing.RETREAT_TIERS', RAW_RETREAT_TIERS);
+export const RETREAT_TRACKS = overridable('pricing.RETREAT_TRACKS', RAW_RETREAT_TRACKS);
+export const EXPERIENCE_DETAILS = overridable('pricing.EXPERIENCE_DETAILS', RAW_EXPERIENCE_DETAILS);

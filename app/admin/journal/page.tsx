@@ -6,11 +6,14 @@ import { PageHeader } from '@/components/admin/PageHeader';
 import { LinkButton } from '@/components/admin/Button';
 import { DataTable, StatusBadge } from '@/components/admin/DataTable';
 import { formatDate } from '@/lib/utils';
+import { ensureCommunityPosts } from '@/lib/cms/journal';
 
 export const metadata: Metadata = { title: 'Journal · Admin', robots: { index: false } };
 export const dynamic = 'force-dynamic';
 
 export default async function Page() {
+  // The community stories that ship with the site appear here so they can be edited.
+  await ensureCommunityPosts().catch((e) => console.warn('[journal] community import skipped', (e as Error).message));
   const posts = await prisma.journalPost.findMany({
     orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
   });

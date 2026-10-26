@@ -45,7 +45,7 @@ export default async function RoomDetailPage({ params }: Props) {
   const room = await getRoomWithLive(params.slug);
   if (!room) notFound();
 
-  const { t } = getT();
+  const { t } = await getT();
   const cat = displayCategory(room.category);
   const catKey = ({ 'Garden View': 'rooms.filter.suite', 'Palm Side': 'rooms.filter.palmSide', 'Sea View': 'rooms.filter.beachView' } as const)[cat];
 

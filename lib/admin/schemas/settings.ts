@@ -32,6 +32,8 @@ export const contactSettingsSchema = z.object({
   facebook: urlOrEmpty,
   tripadvisor: urlOrEmpty,
   youtube: urlOrEmpty,
+  googleReviews: urlOrEmpty,
+  bookingReviews: urlOrEmpty,
 });
 
 // ─── SEO / branding ──────────────────────────────────────────────────────
