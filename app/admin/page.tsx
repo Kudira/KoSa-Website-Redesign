@@ -137,8 +137,7 @@ export default async function AdminHome() {
               {process.env.CLOUDBEDS_PROPERTY_ID ? '✓ Configured' : 'not configured'}
             </li>
             <li>
-              OpenRouter AI:{' '}
-              {process.env.OPENROUTER_API_KEY ? '✓ Connected' : 'using static fallback'}
+              Abena concierge: answers from KoSa information and live Cloudbeds rooms (no AI service)
             </li>
             <li>
               Supabase Storage:{' '}

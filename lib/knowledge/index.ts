@@ -298,7 +298,7 @@ function tokenize(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9\s'-]/g, ' ').split(/\s+/).filter((t) => t.length > 1 && !STOPWORDS.has(t));
 }
 
-export function searchKnowledge(docs: KnowledgeDoc[], query: string, k = 6): KnowledgeDoc[] {
+export function searchKnowledgeScored(docs: KnowledgeDoc[], query: string, k = 6): { doc: KnowledgeDoc; score: number }[] {
   const q = tokenize(query);
   if (!q.length) return [];
   const phrase = query.toLowerCase().trim();
@@ -309,7 +309,7 @@ export function searchKnowledge(docs: KnowledgeDoc[], query: string, k = 6): Kno
       let score = 0;
       for (const t of q) {
         if (title.includes(t)) score += 3;
-        score += content.split(t).length - 1;
+        score += Math.min(3, content.split(t).length - 1);
         if (doc.category.startsWith(t.replace(/s$/, ''))) score += 2;
       }
       if (phrase.length >= 4 && (title.includes(phrase) || content.includes(phrase))) score += 5;
@@ -317,6 +317,9 @@ export function searchKnowledge(docs: KnowledgeDoc[], query: string, k = 6): Kno
     })
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, k)
-    .map((x) => x.doc);
+    .slice(0, k);
+}
+
+export function searchKnowledge(docs: KnowledgeDoc[], query: string, k = 6): KnowledgeDoc[] {
+  return searchKnowledgeScored(docs, query, k).map((x) => x.doc);
 }

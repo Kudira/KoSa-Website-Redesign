@@ -29,7 +29,7 @@ structural motif (`components/ui/Tide.tsx`), dividing land from sea. An optional
 
 # KO-SA Beach Resort · ko-sa.com
 
-Eco-luxury beach resort website - Next.js 14, TypeScript, Tailwind, Framer Motion, Prisma + Supabase Postgres, Supabase Storage, Cloudbeds PMS, OpenRouter (Gemma + multi-model fallback) AI concierge.
+Eco-luxury beach resort website - Next.js 14, TypeScript, Tailwind, Framer Motion, Prisma + Supabase Postgres, Supabase Storage, Cloudbeds PMS, lookup-based concierge.
 
 **Brand:** Kosa Palms · *Simply, Belong.*
 
@@ -40,7 +40,7 @@ Eco-luxury beach resort website - Next.js 14, TypeScript, Tailwind, Framer Motio
 - **Frontend:** Next.js 14 (App Router) · React 18 · TypeScript · Tailwind CSS · Framer Motion · Lenis (smooth scroll) · @photo-sphere-viewer/core (virtual tour)
 - **Backend:** Next.js API routes · Prisma + Supabase Postgres · Supabase Storage · Resend (email)
 - **Booking:** Cloudbeds OAuth 2.0 PMS - availability, room types, reservations, guest creation, cancellation
-- **AI Concierge ("Abena"):** OpenRouter (Gemma → Qwen → GPT-OSS fallback chain) with in-memory keyword-scored knowledge retrieval - zero infra, deterministic, ~50 docs covering rooms, experiences, policies, FAQs, location
+- **Concierge ("Abena"):** answers only from KoSa's own information (keyword-scored lookup) and live Cloudbeds rooms, and sends anything else to WhatsApp. No AI model, no API key.
 - **Virtual tour:** Google Drive service-account-backed scene fetch with fallback Unsplash scenes for dev
 - **SEO:** Metadata API, sitemap.ts, schema.org JSON-LD (LodgingBusiness, HotelRoom, Article), OG images
 - **Auth:** NextAuth (admin only; routes scaffolded)
@@ -76,7 +76,6 @@ See `.env.example` for the full list. The site is built to **degrade gracefully*
 | Missing | Behaviour |
 |---|---|
 | `DATABASE_URL` | DB writes log a warning; forms still respond |
-| `OPENROUTER_API_KEY` | Chat uses a static knowledge fallback, streamed word-by-word |
 | `RESEND_API_KEY` | Emails are logged, not sent |
 | `CLOUDBEDS_*` | Availability/reservation endpoints return `{ configured: false }` and the booking flow records the request locally |
 | `GOOGLE_DRIVE_SERVICE_ACCOUNT` | Virtual tour uses 6 high-res fallback scenes |
