@@ -51,7 +51,7 @@ const FACTS: KnowledgeDoc[] = [
     category: 'policy',
     title: 'Payment methods (KoSa is fully cashless)',
     content:
-      'KoSa is fully cashless. Guests pay by Mobile Money, card on POS, Paystack payment links, bank transfer or QR code. Cash is not accepted. Prices are in Ghana cedis (GHS).',
+      'KoSa is fully cashless. Guests pay by Mobile Money, card on POS, Paystack payment links, bank transfer or QR code. Cash is not accepted. Prices are in Ghana cedis (GHS). A 30% deposit is paid at booking on the secure Cloudbeds booking page (through Paystack) to confirm the reservation.',
   },
   { id: 'children', category: 'policy', title: 'Children', content: en('planPage.faq.children.a') },
   { id: 'dietary', category: 'dining', title: 'Halal, vegetarian and dietary needs', content: en('planPage.faq.halal.a') },

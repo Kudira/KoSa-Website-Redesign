@@ -185,6 +185,7 @@ export const enRedesign = {
   'booked.tryAgain': 'Try again',
   'booked.whatsapp': 'Message us on WhatsApp',
   'booked.home': 'Back to the beach',
+  'stay.deposit': 'A 30% deposit confirms your booking, paid securely when you book.',
 };
 
 type Keys = keyof typeof enRedesign;
@@ -353,6 +354,7 @@ export const frRedesign: Partial_ = {
   'booked.tryAgain': 'Réessayer',
   'booked.whatsapp': 'Nous écrire sur WhatsApp',
   'booked.home': 'Retour à la plage',
+  'stay.deposit': 'Un acompte de 30 % confirme votre réservation, payé en toute sécurité lors de la réservation.',
 };
 
 export const esRedesign: Partial_ = {
@@ -518,6 +520,7 @@ export const esRedesign: Partial_ = {
   'booked.tryAgain': 'Intentar de nuevo',
   'booked.whatsapp': 'Escríbenos por WhatsApp',
   'booked.home': 'Volver a la playa',
+  'stay.deposit': 'Un depósito del 30 % confirma tu reserva, pagado de forma segura al reservar.',
 };
 
 export const nlRedesign: Partial_ = {
@@ -683,6 +686,7 @@ export const nlRedesign: Partial_ = {
   'booked.tryAgain': 'Opnieuw proberen',
   'booked.whatsapp': 'Stuur ons een WhatsApp',
   'booked.home': 'Terug naar het strand',
+  'stay.deposit': 'Een aanbetaling van 30% bevestigt je boeking en wordt veilig betaald bij het boeken.',
 };
 
 export const deRedesign: Partial_ = {
@@ -848,6 +852,7 @@ export const deRedesign: Partial_ = {
   'booked.tryAgain': 'Erneut versuchen',
   'booked.whatsapp': 'Auf WhatsApp schreiben',
   'booked.home': 'Zurück an den Strand',
+  'stay.deposit': 'Eine Anzahlung von 30 % bestätigt Ihre Buchung und wird beim Buchen sicher bezahlt.',
 };
 
 export const zhRedesign: Partial_ = {
@@ -1013,4 +1018,5 @@ export const zhRedesign: Partial_ = {
   'booked.tryAgain': '重试',
   'booked.whatsapp': '通过 WhatsApp 联系我们',
   'booked.home': '返回海滩',
+  'stay.deposit': '预订时安全支付 30% 定金即可确认预订。',
 };

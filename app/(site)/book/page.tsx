@@ -26,6 +26,7 @@ export default function BookPage({ searchParams }: Props) {
       <section data-sky="morning" className="container-page py-16 md:py-24">
         <h2 className="font-display text-display-sm mb-8">{t('stay.heading')}</h2>
         <StayPicker initial={searchParams} />
+        <p className="mt-6 opacity-80">{t('stay.deposit')}</p>
         <ul className="mt-10 flex flex-wrap gap-x-10 gap-y-3 opacity-85">
           <li className="flex items-center gap-2"><ShieldCheck size={18} className="text-teal" aria-hidden /> {t('booking.badgeSecure')}</li>
           <li className="flex items-center gap-2"><BadgeCheck size={18} className="text-teal" aria-hidden /> {t('booking.badgeBestRate')}</li>
