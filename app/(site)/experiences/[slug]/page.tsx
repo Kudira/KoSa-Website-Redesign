@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
+import { wa } from '@/lib/whatsapp';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { PageHero } from '@/components/shared/PageHero';
 import { getPublicExperienceBySlug } from '@/lib/cms/experiences';
 import { getT } from '@/lib/i18n/server';
-import { site } from '@/lib/site';
+import { BookButton } from '@/components/shared/BookButton';
 import { media, prose } from '@/lib/content/media';
 
 export const dynamic = 'force-dynamic';
@@ -35,9 +36,15 @@ export default async function ExperienceDetail({ params }: Props) {
         <div className="lg:col-span-7">
           <div className="kosa-prose whitespace-pre-line">{e.longBody || t('experiencesPage.detailFallback')}</div>
           <div className="mt-12 flex flex-wrap gap-3">
-            <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="inline-flex h-14 items-center rounded-full bg-teal px-8 font-semibold text-cream transition-colors hover:bg-teal-700">
+            <BookButton
+              category="EXPERIENCE"
+              itemName={e.title}
+              message={wa.experience({ name: e.title, duration: e.duration })}
+              source={`experiences/${e.slug}`}
+              className="inline-flex h-14 items-center rounded-full bg-teal px-8 font-semibold text-cream transition-colors hover:bg-teal-700"
+            >
               {t('experiencesPage.addToStay')}
-            </a>
+            </BookButton>
             <Link href="/contact" className="inline-flex h-14 items-center rounded-full px-7 font-semibold ring-1 ring-inset ring-forest/25 transition-colors hover:bg-forest hover:text-cream">
               {t('common.speakConcierge')}
             </Link>

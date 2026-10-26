@@ -370,7 +370,7 @@ export function ChatWidget() {
                           : 'bg-cream text-forest border border-umber/10 rounded-bl-sm'
                       }`}
                     >
-                      {m.content || (loading && i === messages.length - 1 ? <Typing /> : null)}
+                      {m.content ? <RichText text={m.content} /> : loading && i === messages.length - 1 ? <Typing /> : null}
                     </div>
                   </div>
                 );
@@ -436,4 +436,35 @@ function Typing() {
       ))}
     </span>
   );
+}
+
+
+// Turns Abena's replies into readable text with real links:
+// [label](url) markdown links, bare URLs and site paths like /book or /rooms/x.
+function RichText({ text }: { text: string }) {
+  const parts: React.ReactNode[] = [];
+  const re = /\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)|(https?:\/\/[^\s)]+)|(?<![\w/])(\/(?:book|rooms|wellness|dining|experiences|events|groups|plan|contact|about|gallery|blog)(?:[/?#][^\s.,)]*)?)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let k = 0;
+  while ((m = re.exec(text))) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    const href = m[2] ?? m[3] ?? m[4];
+    const label = m[1] ?? (m[3] ? 'link' : m[4]);
+    const external = /^https?:/.test(href);
+    parts.push(
+      <a
+        key={k++}
+        href={href}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noreferrer' : undefined}
+        className="font-semibold text-teal underline underline-offset-2 decoration-teal/40 hover:decoration-teal break-words"
+      >
+        {label}
+      </a>,
+    );
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return <>{parts}</>;
 }

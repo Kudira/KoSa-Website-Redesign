@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { wa } from '@/lib/whatsapp';
 import Link from 'next/link';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { Plane, CalendarRange } from 'lucide-react';
@@ -12,7 +13,7 @@ import { FaqAccordion } from '@/components/marketing/FaqAccordion';
 import { listPublicExperiences } from '@/lib/cms/experiences';
 import { listPublicWellnessPackages } from '@/lib/cms/wellness-packages';
 import { site } from '@/lib/site';
-import { waPrefill, type PackageKey } from '@/lib/pricing';
+import { type PackageKey } from '@/lib/pricing';
 import { BookButton } from '@/components/shared/BookButton';
 
 // Tailwind chips per package category (graceful default for unknown values).
@@ -106,7 +107,7 @@ export default async function PlanPage() {
                   <BookButton
                     category="PACKAGE"
                     itemName={pkg.name}
-                    message={`Hi KoSa! I'd like to enquire about the ${pkg.name} package.`}
+                    message={wa.stayPackage({ name: pkg.name, durationLabel: pkg.durationLabel, priceGhs: pkg.priceGhs, inclusions: pkg.inclusions.slice(0, 4).join(', ') })}
                     source="plan/packages"
                     className="inline-flex h-11 shrink-0 items-center rounded-full bg-forest px-5 font-semibold text-cream transition-colors hover:bg-forest-700"
                   >
@@ -149,13 +150,19 @@ export default async function PlanPage() {
                   </ul>
                   <p className="mt-6 italic opacity-70">{prose(t('planPage.itineraries.eachClose'))}</p>
                   <div className="mt-7 flex flex-wrap gap-3">
-                    <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center rounded-full bg-teal px-6 font-semibold text-cream transition-colors hover:bg-teal-700">
+                    <BookButton
+                      category="PACKAGE"
+                      itemName={t(it.titleKey)}
+                      message={wa.stayPackage({ name: t(it.titleKey), nights: p.nights, priceGhs: p.fromGhs, inclusions: p.inclusions })}
+                      source="plan/itineraries"
+                      className="inline-flex h-12 items-center rounded-full bg-teal px-6 font-semibold text-cream transition-colors hover:bg-teal-700"
+                    >
                       {t('planPage.itineraries.bookThis')}
-                    </a>
+                    </BookButton>
                     <BookButton
                       category="PACKAGE"
                       itemName={`Customise: ${t(it.titleKey)}`}
-                      message={waPrefill.customiseStay()}
+                      message={wa.customiseStay(t(it.titleKey))}
                       source="plan/itineraries"
                       className="inline-flex h-12 items-center rounded-full px-6 font-semibold ring-1 ring-inset ring-forest/25 transition-colors hover:bg-forest hover:text-cream"
                     >
@@ -194,7 +201,7 @@ export default async function PlanPage() {
             <BookButton
               category="PACKAGE"
               itemName="Customise my stay"
-              message={waPrefill.customiseStay()}
+              message={wa.customiseStay()}
               source="plan/experiences"
               className="inline-flex h-12 items-center rounded-full px-6 font-semibold ring-1 ring-inset ring-forest/25 transition-colors hover:bg-forest hover:text-cream"
             >
@@ -214,7 +221,7 @@ export default async function PlanPage() {
             <BookButton
               category="TRANSFER"
               itemName="Airport transfer"
-              message="Hi KoSa! I'd like to book an airport transfer. My arrival details are:"
+              message={wa.transfer()}
               source="plan/getting-here"
               className="mt-8 inline-flex h-14 items-center gap-2.5 rounded-full bg-sunshine px-8 font-semibold text-forest-900 transition-colors hover:bg-cream"
             >

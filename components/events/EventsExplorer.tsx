@@ -5,6 +5,7 @@
 // image, category, description, transport badge and a WhatsApp enquiry CTA.
 
 import { useMemo, useState } from 'react';
+import { wa } from '@/lib/whatsapp';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { Bus, CalendarHeart } from 'lucide-react';
 import { BookButton } from '@/components/shared/BookButton';
@@ -105,7 +106,7 @@ export function EventsExplorer({ events, labels }: { events: PublicEvent[]; labe
                 <BookButton
                   category="EVENT"
                   itemName={e.title}
-                  message={`Hi KoSa! I'd like to book the ${e.title}.`}
+                  message={wa.event({ title: e.title, priceNote: e.priceNote, transportIncluded: e.transportIncluded })}
                   source="events"
                   className="mt-5 self-start inline-flex h-11 items-center gap-2 rounded-full bg-forest text-cream font-semibold px-5 hover:bg-forest-700 transition-colors"
                 >

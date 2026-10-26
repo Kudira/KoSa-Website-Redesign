@@ -128,7 +128,7 @@ export default function PhilosophyPage() {
           </p>
           <p className="mt-10 font-display italic text-3xl text-sunshine">Life is better at the beach.</p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="inline-flex h-14 items-center rounded-full bg-sunshine px-8 font-semibold text-forest-900 transition-colors hover:bg-cream">
+            <a href="/book" className="inline-flex h-14 items-center rounded-full bg-sunshine px-8 font-semibold text-forest-900 transition-colors hover:bg-cream">
               Plan your stay
             </a>
             <Link href="/about" className="link-tide text-cream/85">More about KoSa</Link>

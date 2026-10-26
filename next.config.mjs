@@ -1,4 +1,10 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// The Group Guide download appears on /groups only when the PDF is in the repo.
+const GROUP_GUIDE = '/docs/kosa-group-guide-2026-27.pdf';
+const hasGroupGuide = fs.existsSync(path.join(process.cwd(), 'public', GROUP_GUIDE));
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -7,6 +13,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  env: { NEXT_PUBLIC_GROUP_GUIDE: hasGroupGuide ? GROUP_GUIDE : '' },
   poweredByHeader: false,
   compress: true,
   images: {

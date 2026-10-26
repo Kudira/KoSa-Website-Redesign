@@ -6,6 +6,7 @@
 // download, and it never plays until the visitor asks for it.
 
 import { useEffect, useRef, useState } from 'react';
+import { Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n';
 
@@ -117,11 +118,15 @@ export function SeaSound({ className, tone = 'light' }: { className?: string; to
       aria-label={label}
       title={label}
       className={cn(
-        'group inline-flex items-center gap-2.5 rounded-full h-11 pl-3 pr-4 text-sm font-medium transition-colors duration-500',
-        tone === 'dark' ? 'text-cream hover:bg-cream/10' : 'text-forest hover:bg-forest/5',
+        'group inline-flex items-center justify-center gap-2 xl:gap-2.5 rounded-full h-11 min-w-11 px-3 xl:pl-3 xl:pr-4 text-sm font-medium transition-colors duration-500',
+        tone === 'dark' ? 'text-cream hover:bg-cream/10 ring-cream/40' : 'text-forest hover:bg-forest/5 ring-forest/25',
+        // On phones and tablets the label is hidden, so the control gets a
+        // visible outline and a speaker icon to read clearly as "sound".
+        'ring-1 ring-inset xl:ring-0',
         className,
       )}
     >
+      <span className="xl:hidden" aria-hidden>{on ? <Volume2 size={16} /> : <VolumeX size={16} />}</span>
       <span className="flex items-end gap-[3px] h-4" aria-hidden>
         {[0, 1, 2, 3].map((i) => (
           <span

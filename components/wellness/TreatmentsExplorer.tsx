@@ -7,10 +7,11 @@
 // prev/next arrows on desktop.
 
 import { useMemo, useRef, useState } from 'react';
+import { wa } from '@/lib/whatsapp';
 import { ChevronLeft, ChevronRight, Flower2 } from 'lucide-react';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { BookButton } from '@/components/shared/BookButton';
-import { formatGhs, waPrefill } from '@/lib/pricing';
+import { formatGhs } from '@/lib/pricing';
 
 export type TreatmentCard = {
   key: string;
@@ -128,7 +129,7 @@ export function TreatmentsExplorer({
                 <BookButton
                   category="TREATMENT"
                   itemName={tr.name}
-                  message={waPrefill.treatment(tr.name)}
+                  message={wa.treatment({ name: tr.name, durationMin: tr.variants[0]?.durationMin, priceGhs: showPrices ? tr.variants[0]?.priceGhs : undefined })}
                   source="wellness/treatments"
                   className="mt-6 self-start inline-flex h-11 items-center gap-2 rounded-full bg-forest text-cream font-semibold px-5 hover:bg-forest-700 transition-colors"
                 >

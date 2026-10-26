@@ -13,7 +13,7 @@ import { useT } from '@/lib/i18n';
 import { site } from '@/lib/site';
 import { media } from '@/lib/content/media';
 
-export function HeroFilm({ videoUrl, posterUrl }: { videoUrl?: string; posterUrl?: string }) {
+export function HeroFilm({ videoUrl, posterUrl, urgency }: { videoUrl?: string; posterUrl?: string; urgency?: string }) {
   const { t } = useT();
   const reduce = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
@@ -59,12 +59,16 @@ export function HeroFilm({ videoUrl, posterUrl }: { videoUrl?: string; posterUrl
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2, delay: 1.2 }}
         >
-          <p className="text-lede text-cream/90 max-w-md">{t('home.hero.subhead')}</p>
+          <div className="max-w-md">
+            <p className="text-lede text-cream/90">{t('home.hero.subhead')}</p>
+            <p className="mt-4 inline-flex items-center gap-2.5 rounded-full bg-night/35 px-4 py-2 text-sm text-cream backdrop-blur">
+              <span aria-hidden className="h-2 w-2 rounded-full bg-sunshine motion-safe:animate-breathe" />
+              {urgency || t('hero.urgency')}
+            </p>
+          </div>
           <div className="flex flex-wrap gap-3">
             <a
-              href={site.bookingUrl}
-              target="_blank"
-              rel="noreferrer"
+              href="/book"
               className="inline-flex h-14 items-center rounded-full bg-sunshine px-8 font-semibold text-forest-900 transition-colors duration-500 hover:bg-cream"
             >
               {t('home.hero.ctaPrimary')}

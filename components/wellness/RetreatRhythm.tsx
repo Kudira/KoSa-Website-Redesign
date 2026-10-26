@@ -6,9 +6,10 @@
 // Reveal pattern used across the rest of the site.
 
 import { useState } from 'react';
+import { wa } from '@/lib/whatsapp';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { BookButton } from '@/components/shared/BookButton';
-import { formatGhs, waPrefill, RETREAT_TRACKS, type RetreatTrackKey } from '@/lib/pricing';
+import { formatGhs, RETREAT_TRACKS, type RetreatTrackKey } from '@/lib/pricing';
 
 const TRACK_ORDER: RetreatTrackKey[] = ['rotation', 'him', 'her'];
 const TRACK_LABEL: Record<RetreatTrackKey, string> = {
@@ -100,7 +101,7 @@ export function RetreatRhythm() {
             <BookButton
               category="PACKAGE"
               itemName={track.name}
-              message={waPrefill.retreat(track.name)}
+              message={wa.retreat({ name: track.name, days: track.days.length, priceGhs: track.totalGhs })}
               source="wellness/retreats"
               className="inline-flex items-center gap-2 rounded-full bg-sunshine text-teal-900 font-sans text-sm px-8 py-3.5 hover:bg-sunshine-600 transition-colors"
             >

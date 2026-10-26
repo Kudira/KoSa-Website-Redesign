@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { wa } from '@/lib/whatsapp';
 import Link from 'next/link';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { PageHero } from '@/components/shared/PageHero';
@@ -6,7 +7,7 @@ import { SeaBand } from '@/components/ui/SeaBand';
 import { WaveMark } from '@/components/ui/WaveMark';
 import { getT } from '@/lib/i18n/server';
 import { listPublicExperiences } from '@/lib/cms/experiences';
-import { EXPERIENCE_DETAILS, formatGhs, waPrefill } from '@/lib/pricing';
+import { EXPERIENCE_DETAILS, formatGhs } from '@/lib/pricing';
 import { BookButton } from '@/components/shared/BookButton';
 import { listPublicDailyActivities, groupByDay, DAY_ORDER } from '@/lib/cms/daily-activities';
 import { listPublicStayEnhancements, groupByCategory } from '@/lib/cms/stay-enhancements';
@@ -139,7 +140,7 @@ export default async function ExperiencesPage() {
                     <BookButton
                       category="EXPERIENCE"
                       itemName={name}
-                      message={waPrefill.experience(name)}
+                      message={wa.experience({ name, duration: detail.duration, priceGhs: detail.fromGhs })}
                       source="experiences"
                       className="inline-flex h-11 items-center rounded-full bg-forest px-5 font-semibold text-cream transition-colors hover:bg-forest-700"
                     >
@@ -206,7 +207,7 @@ export default async function ExperiencesPage() {
                             <BookButton
                               category="ENHANCEMENT"
                               itemName={item.name}
-                              message={`Hi KoSa! I'd like to add ${item.name} to my stay.`}
+                              message={wa.enhancement({ name: item.name, priceGhs: item.priceGhs, priceTo: item.priceTo })}
                               source="experiences/enhance"
                               className="inline-flex h-10 shrink-0 items-center rounded-full px-4 text-sm font-semibold ring-1 ring-inset ring-forest-900/30 transition-colors hover:bg-forest-900 hover:text-cream"
                             >
@@ -230,7 +231,7 @@ export default async function ExperiencesPage() {
           <BookButton
             category="EXPERIENCE"
             itemName="Build Your Perfect Day"
-            message={waPrefill.planMyStay()}
+            message={wa.customiseStay()}
             source="experiences/build-day"
             className="mt-10 inline-flex h-14 items-center rounded-full bg-sunshine px-8 font-semibold text-forest-900 transition-colors hover:bg-cream"
           >

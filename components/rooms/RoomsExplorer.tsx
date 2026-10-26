@@ -30,6 +30,9 @@ type Labels = {
   from?: string;
   night?: string;
   clear?: string;
+  tonight?: string;
+  left?: string;
+  full?: string;
 };
 
 const CATS = ['All', 'Sea View', 'Garden View', 'Palm Side'] as const;
@@ -148,17 +151,22 @@ export function RoomsExplorer({ rooms, labels, showPrices = true }: { rooms: Pub
 
                   {showPrices && (
                     <p className="mt-8">
-                      <span className="text-sm opacity-60 block">{labels.from ?? 'From'}</span>
-                      <span className="font-display text-4xl">{formatGhs(roomStartingRateGhs(r.slug, r.price))}</span>
+                      <span className="text-sm opacity-60 block">{r.live?.nightly ? labels.tonight ?? 'Tonight from' : labels.from ?? 'From'}</span>
+                      <span className="font-display text-4xl">{formatGhs(r.live?.nightly ?? roomStartingRateGhs(r.slug, r.price))}</span>
                       <span className="opacity-60"> {labels.night ?? 'a night'}</span>
+                    </p>
+                  )}
+                  {r.live?.roomsLeft != null && r.live.roomsLeft <= 3 && (
+                    <p className="mt-3 w-fit rounded-full bg-sunshine/60 px-3.5 py-1.5 text-sm font-semibold">
+                      {r.live.roomsLeft === 0 ? labels.full : (labels.left ?? 'Only {n} left tonight').replace('{n}', String(r.live.roomsLeft))}
                     </p>
                   )}
 
                   <div className="mt-8 flex flex-wrap gap-3">
                     {r.available ? (
-                      <a href={labels.bookingUrl} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center rounded-full bg-teal px-7 font-semibold text-cream transition-colors hover:bg-teal-700">
+                      <Link href={`/rooms/${r.slug}#dates`} className="inline-flex h-12 items-center rounded-full bg-teal px-7 font-semibold text-cream transition-colors hover:bg-teal-700">
                         {labels.cardCta}
-                      </a>
+                      </Link>
                     ) : (
                       <span aria-disabled="true" className="inline-flex h-12 items-center rounded-full bg-forest/10 px-7 font-semibold opacity-60 cursor-not-allowed">
                         {labels.occupied}

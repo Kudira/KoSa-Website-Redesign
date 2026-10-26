@@ -299,7 +299,6 @@ export const waPrefill = {
   privateDining: () =>
     "Hi KoSa! I'd like to enquire about private beach dining for a special occasion.",
   planMyStay: () => "Hi KoSa! I'd like help planning my stay.",
-  turtleWalk: () => 'Hi KoSa! I’d like to ask about the sea turtle night walks.',
   customiseStay: () => "Hi KoSa! I'd like to customise my stay.",
   escape: (name: string) => `Hi KoSa! I'd like to book the ${name} One-Day Escape at O2 Spa & Wellness.`,
   retreat: (name: string) => `Hi KoSa! I'd like to book the ${name} retreat at O2 Spa & Wellness.`,

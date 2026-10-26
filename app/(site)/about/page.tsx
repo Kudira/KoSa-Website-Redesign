@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import type { DictKey } from '@/lib/i18n/dictionaries';
 import { MessageCircle } from 'lucide-react';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { PageHero } from '@/components/shared/PageHero';
 import { SeaBand } from '@/components/ui/SeaBand';
 import { Tide } from '@/components/ui/Tide';
-import { BookButton } from '@/components/shared/BookButton';
 import { getT } from '@/lib/i18n/server';
 import { site } from '@/lib/site';
-import { waPrefill } from '@/lib/pricing';
 import { media, prose } from '@/lib/content/media';
 
 export const metadata: Metadata = {
@@ -26,7 +26,16 @@ const VALUES = [
   { titleKey: 'aboutPage.values.legacy.title', bodyKey: 'aboutPage.values.legacy.body' },
 ] as const;
 
-// A fixed scatter of stars for the turtle section.
+// Community projects, newest first. Each links to its Journal article.
+const COMMUNITY: { slug: string; year: string; label: DictKey }[] = [
+  { slug: 'fixing-the-road-to-ampenyi', year: '2025', label: 'aboutPage.community.road' },
+  { slug: 'public-toilets-for-ampenyi', year: '2025', label: 'aboutPage.community.toilets' },
+  { slug: 'a-festival-at-ampenyi-basic-school', year: '2025', label: 'aboutPage.community.school' },
+  { slug: 'mental-health-day-at-ankaful', year: '2022', label: 'aboutPage.community.ankaful' },
+  { slug: 'clean-up-at-the-ampenyi-chps-zone', year: '2021', label: 'aboutPage.community.chps' },
+];
+
+// A fixed scatter of stars for the community section.
 const STARS = Array.from({ length: 28 }, (_, i) => {
   const r = (n: number) => ((Math.sin(i * 91.7 + n * 47.3) * 9301.17) % 1 + 1) % 1;
   return { x: r(1) * 100, y: r(2) * 55, s: r(3) > 0.7 ? 2.5 : 1.5 };
@@ -84,7 +93,7 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      {/* The sea turtle project, at night */}
+      {/* Ko-Sa and Ampenyi: community projects, at night */}
       <section data-sky="night" className="relative text-cream">
         <Tide above="var(--sky)" below="#032A36" echo size="lg" />
         <div className="relative overflow-hidden bg-night py-20 md:py-32">
@@ -93,26 +102,29 @@ export default function AboutPage() {
             <span key={i} className="absolute rounded-full bg-cream motion-safe:animate-twinkle" style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.s, height: s.s, animationDelay: `${(i % 7) * 0.7}s` }} />
           ))}
         </div>
-        <div className="relative container-page grid gap-12 lg:grid-cols-12 lg:items-center">
-          <div className="lg:col-span-6">
-            <p className="eyebrow mb-5">Wild Seas Conservation Ghana</p>
-            <h2 className="font-display text-display-lg text-balance">{t('aboutPage.seaTurtle.title')}</h2>
-            <p className="mt-6 text-lede text-cream/85">{prose(t('aboutPage.seaTurtle.body'))}</p>
-            <BookButton
-              category="EXPERIENCE"
-              itemName="Sea Turtle Night Walk"
-              message={waPrefill.turtleWalk()}
-              source="about/turtles"
+        <div className="relative container-page grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <p className="eyebrow mb-5">{t('aboutPage.community.eyebrow')}</p>
+            <h2 className="font-display text-display-lg text-balance">{t('aboutPage.community.title')}</h2>
+            <p className="mt-6 text-lede text-cream/85">{t('aboutPage.community.body')}</p>
+            <Link
+              href="/blog"
               className="mt-9 inline-flex h-14 items-center rounded-full bg-sand px-8 font-semibold text-night transition-colors hover:bg-cream"
             >
-              {t('aboutPage.seaTurtle.cta')}
-            </BookButton>
+              {t('aboutPage.community.cta')}
+            </Link>
           </div>
-          <div className="lg:col-span-5 lg:col-start-8">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-pebble">
-              <Image src={media.gallery.beach11} alt="" fill sizes="(min-width:1024px) 38vw, 92vw" className="object-cover branded-img brightness-[0.8]" />
-            </div>
-          </div>
+          <ul className="lg:col-span-6 lg:col-start-7 self-center">
+            {COMMUNITY.map((c) => (
+              <li key={c.slug} className="border-t border-cream/15 last:border-b">
+                <Link href={`/blog/${c.slug}`} className="group flex items-baseline gap-6 py-5">
+                  <span className="w-12 shrink-0 text-sm text-sunshine">{c.year}</span>
+                  <span className="font-display text-2xl leading-snug transition-colors group-hover:text-sunshine">{t(c.label)}</span>
+                  <span aria-hidden className="ml-auto text-cream/50 transition-transform group-hover:translate-x-1">→</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
         </div>
         <Tide above="#032A36" below="var(--sky)" size="md" />
@@ -123,7 +135,7 @@ export default function AboutPage() {
         <h2 className="font-display text-display-xl max-w-4xl text-balance">{t('aboutPage.closing.headline')}</h2>
         <p className="mt-6 text-lede opacity-85 max-w-xl">{prose(t('aboutPage.closing.body'))}</p>
         <div className="mt-10 flex flex-wrap gap-3">
-          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="inline-flex h-14 items-center rounded-full bg-forest-900 px-8 font-semibold text-cream transition-colors hover:bg-forest">
+          <a href="/book" className="inline-flex h-14 items-center rounded-full bg-forest-900 px-8 font-semibold text-cream transition-colors hover:bg-forest">
             {t('aboutPage.closing.ctaBook')}
           </a>
           <a href={wa} target="_blank" rel="noreferrer" className="inline-flex h-14 items-center gap-2.5 rounded-full px-7 font-semibold ring-1 ring-inset ring-forest-900/30 transition-colors hover:bg-forest-900 hover:text-cream">

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { PageHero } from '@/components/shared/PageHero';
 import { SeaBand } from '@/components/ui/SeaBand';
@@ -67,6 +68,11 @@ export default async function EventsPage() {
               </div>
               <h2 className="mt-7 font-display text-display-sm">{g.title}</h2>
               <p className="mt-4 opacity-85 leading-relaxed">{prose(g.body)}</p>
+              {i === 2 && (
+                <Link href="/groups" className="mt-5 inline-flex font-semibold link-tide">
+                  {t('nav.groups')}
+                </Link>
+              )}
             </article>
           ))}
         </div>

@@ -16,7 +16,7 @@ import { WellTable } from '@/components/home/WellTable';
 import { Homecoming } from '@/components/home/Homecoming';
 import { Stays } from '@/components/home/Stays';
 import { Voices } from '@/components/home/Voices';
-import { listPublicRooms } from '@/lib/cms/rooms';
+import { listRoomsWithLive } from '@/lib/cms/rooms-live';
 import { listPublicTestimonials } from '@/lib/cms/testimonials';
 import { getSetting } from '@/lib/cms/settings';
 import { media } from '@/lib/content/media';
@@ -35,7 +35,7 @@ const MOMENTS: DayMoment[] = [
 
 export default async function HomePage() {
   const [rooms, testimonials, pricing, hero] = await Promise.all([
-    listPublicRooms(),
+    listRoomsWithLive(),
     listPublicTestimonials(),
     getSetting('pricing'),
     getSetting('hero'),
@@ -43,7 +43,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroFilm videoUrl={hero.videoUrl} posterUrl={hero.posterUrl} />
+      <HeroFilm videoUrl={hero.videoUrl} posterUrl={hero.posterUrl} urgency={hero.urgency} />
       <Exhale />
       <DayAtKosa moments={MOMENTS} />
       <RoomsDrift rooms={rooms} showPrices={!pricing.hideRoomPrices} />

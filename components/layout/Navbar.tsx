@@ -121,7 +121,7 @@ export function Navbar() {
           </nav>
 
           <div className="ml-auto flex items-center gap-1 md:gap-2">
-            <SeaSound tone={light || open ? 'dark' : 'light'} className="hidden sm:inline-flex" />
+            <SeaSound tone={light || open ? 'dark' : 'light'} />
             <div className="hidden md:block">
               <LanguageSwitcher tone={light || open ? 'cream' : 'umber'} />
             </div>
@@ -142,17 +142,15 @@ export function Navbar() {
               </span>
               <span className="hidden sm:inline">{open ? t('menu.close') : t('menu.open')}</span>
             </button>
-            <a
-              href={site.bookingUrl}
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href="/book"
               className={cn(
                 'inline-flex h-11 items-center whitespace-nowrap rounded-full px-4 md:px-6 text-[0.95rem] font-semibold transition-colors duration-500',
                 light || open ? 'bg-cream text-forest hover:bg-sunshine' : 'bg-teal text-cream hover:bg-teal-700',
               )}
             >
               {t('nav.book')}
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -237,7 +235,6 @@ function SiteMenu({ onClose }: { onClose: () => void }) {
             </dl>
             <div className="flex items-center gap-2 md:hidden">
               <LanguageSwitcher tone="cream" />
-              <SeaSound tone="dark" />
             </div>
           </motion.aside>
         </div>

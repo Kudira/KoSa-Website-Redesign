@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { wa } from '@/lib/whatsapp';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { WellnessEnquiryForm } from '@/components/marketing/WellnessEnquiryForm';
 import { BookButton } from '@/components/shared/BookButton';
@@ -18,7 +19,6 @@ import {
   ESCAPES,
   RETREAT_TIERS,
   formatGhs,
-  waPrefill,
   type EscapeKey,
 } from '@/lib/pricing';
 
@@ -223,7 +223,7 @@ export default async function WellnessPage() {
                 <BookButton
                   category="PACKAGE"
                   itemName={`${esc.name} Escape`}
-                  message={waPrefill.escape(esc.name)}
+                  message={wa.escape({ name: esc.name, priceGhs: esc.priceGhs })}
                   source="wellness/escapes"
                   className={cn(
                     'mt-6 inline-flex h-12 items-center justify-center rounded-full px-6 font-semibold transition-colors',
@@ -306,7 +306,7 @@ export default async function WellnessPage() {
             <BookButton
               category="OTHER"
               itemName="Private Wellness Consultation"
-              message={waPrefill.consultation()}
+              message={wa.consultation()}
               source="wellness/closing"
               className="mt-8 inline-flex h-14 items-center rounded-full bg-forest-900 px-8 font-semibold text-cream transition-colors hover:bg-forest"
             >

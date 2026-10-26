@@ -141,8 +141,6 @@ const POSTS: Post[] = [
 <p>We use the words eco-luxury carefully. Not because the rooms are gilded - they are not - but because we believe true luxury is not about excess. It is about authenticity: the feeling of sand between your toes, the sound of waves at dawn, fresh local food prepared with care, the warmth of genuine welcome.</p>
 <h2>Built from the place</h2>
 <p>The kitchen draws from our own organic garden and from the nets of fishermen we have worked with for years. Care for the shoreline shapes every choice. It is simply how Ko-Sa was built, and how it stays.</p>
-<h2>The sea turtles</h2>
-<p>With local conservation partners, we help fishermen release sea turtles caught in their nets, compensate them for damaged gear, and train Ampenyi residents in tagging and data collection. Between November and March, guests can join evening beach walks to watch the turtles come ashore to lay their eggs - a quiet privilege, and a reminder of who this coast really belongs to.</p>
 <p>Stay with us and a little of your visit flows back into the land and the lives around it. That, to us, is the only luxury worth keeping.</p>
 `,
   },

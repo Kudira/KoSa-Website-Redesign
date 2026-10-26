@@ -3,7 +3,7 @@ import { MessageCircle } from 'lucide-react';
 import { PageHero } from '@/components/shared/PageHero';
 import { RoomsExplorer } from '@/components/rooms/RoomsExplorer';
 import { SeaBand } from '@/components/ui/SeaBand';
-import { listPublicRooms } from '@/lib/cms/rooms';
+import { listRoomsWithLive } from '@/lib/cms/rooms-live';
 import { getT } from '@/lib/i18n/server';
 import { site } from '@/lib/site';
 import { getSetting } from '@/lib/cms/settings';
@@ -19,7 +19,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function RoomsPage() {
   const { t } = getT();
-  const [rooms, pricing] = await Promise.all([listPublicRooms(), getSetting('pricing')]);
+  const [rooms, pricing] = await Promise.all([listRoomsWithLive(), getSetting('pricing')]);
   const showPrices = !pricing.hideRoomPrices;
   const wa = `${site.socials.whatsapp}?text=${encodeURIComponent(site.contact.whatsappMessage)}`;
   const intro = sentences(t('roomsPage.intro'));
@@ -57,6 +57,9 @@ export default async function RoomsPage() {
             bookingUrl: site.bookingUrl,
             from: t('homeRooms.from'),
             night: t('homeRooms.night'),
+            tonight: t('roomLive.tonight'),
+            left: t('stay.tonightLeft'),
+            full: t('stay.soldOutTonight'),
           }}
         />
       </section>
@@ -66,7 +69,7 @@ export default async function RoomsPage() {
             <div className="lg:col-span-6">
               <h2 className="font-display text-display-md text-balance">{t('roomsPage.bookDirect')}</h2>
               <div className="mt-9 flex flex-wrap gap-3">
-                <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="inline-flex h-14 items-center rounded-full bg-sunshine px-8 font-semibold text-forest-900 transition-colors hover:bg-cream">
+                <a href="/book" className="inline-flex h-14 items-center rounded-full bg-sunshine px-8 font-semibold text-forest-900 transition-colors hover:bg-cream">
                   {t('common.bookYourStay')}
                 </a>
                 <a href={wa} target="_blank" rel="noreferrer" className="inline-flex h-14 items-center gap-2.5 rounded-full px-7 font-semibold ring-1 ring-inset ring-cream/50 transition-colors hover:bg-cream hover:text-teal-700">

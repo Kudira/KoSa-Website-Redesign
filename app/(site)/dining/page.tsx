@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { wa } from '@/lib/whatsapp';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { PageHero } from '@/components/shared/PageHero';
 import { SeaBand } from '@/components/ui/SeaBand';
@@ -8,7 +9,6 @@ import { listPublicGallery } from '@/lib/cms/gallery';
 import { DiningMenu } from '@/components/dining/DiningMenu';
 import { FoodGallery } from '@/components/dining/FoodGallery';
 import { BookButton } from '@/components/shared/BookButton';
-import { waPrefill } from '@/lib/pricing';
 import { media, prose, sentences } from '@/lib/content/media';
 import { cn } from '@/lib/utils';
 import type { SkyName } from '@/components/ui/Sky';
@@ -31,7 +31,7 @@ const SECTIONS = [
     bodyKey: 'diningPage.restaurant.body',
     hoursKey: 'diningPage.restaurant.hours',
     image: media.dining.restaurant,
-    cta: { labelKey: 'diningPage.restaurant.cta', itemName: 'Table reservation', message: waPrefill.reserveTable() },
+    cta: { labelKey: 'diningPage.restaurant.cta', itemName: 'Table reservation', message: wa.table() },
   },
   { key: 'bar', sky: 'golden', titleKey: 'diningPage.bar.title', nameKey: 'diningPage.bar.name', bodyKey: 'diningPage.bar.body', hoursKey: 'diningPage.bar.hours', image: media.dining.bar },
 ] as const;
@@ -49,7 +49,7 @@ export default async function DiningPage() {
         <BookButton
           category="DINING"
           itemName="Table reservation"
-          message={waPrefill.reserveTable()}
+          message={wa.table()}
           source="dining/intro"
           className="inline-flex h-12 items-center rounded-full bg-teal px-7 font-semibold text-cream transition-colors hover:bg-teal-700"
         >
@@ -103,7 +103,7 @@ export default async function DiningPage() {
             <BookButton
               category="DINING"
               itemName="Private & beach dining"
-              message={waPrefill.privateDining()}
+              message={wa.privateDining()}
               source="dining/private"
               className="mt-8 inline-flex h-14 items-center rounded-full bg-sunshine px-8 font-semibold text-forest-900 transition-colors hover:bg-cream"
             >

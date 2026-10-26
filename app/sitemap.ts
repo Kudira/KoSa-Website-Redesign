@@ -1,3 +1,4 @@
+import { COMMUNITY_SLUGS } from '@/lib/content/community';
 import type { MetadataRoute } from 'next';
 import { site } from '@/lib/site';
 import { prisma } from '@/lib/prisma';
@@ -17,6 +18,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/blog',
     '/contact',
     '/book',
+    '/groups',
+    '/events',
+    '/plan',
+    '/about/philosophy',
   ];
 
   // Pull live slugs from the CMS. Fall back to the editorial defaults when the
@@ -38,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamicPaths = [
     ...roomSlugs.map((s) => `/rooms/${s}`),
     ...experienceSlugs.map((s) => `/experiences/${s}`),
-    ...postRows.map((p) => `/blog/${p.slug}`),
+    ...Array.from(new Set([...postRows.map((p) => p.slug), ...COMMUNITY_SLUGS])).map((slug) => `/blog/${slug}`),
   ];
 
   return [...staticPaths, ...dynamicPaths].map((path) => ({

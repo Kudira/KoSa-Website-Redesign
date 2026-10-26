@@ -11,6 +11,8 @@ export const heroSettingsSchema = z.object({
   headline: z.string().trim().max(200).optional(),
   tagline: z.string().trim().max(200).optional(),
   location: z.string().trim().max(160).optional(),
+  /** Short booking nudge under the hero. Leave empty to use the default line. */
+  urgency: z.string().trim().max(160).optional(),
   videoUrl: urlOrEmpty,
   posterUrl: urlOrEmpty,
   ctaPrimaryLabel: z.string().trim().max(80).optional(),

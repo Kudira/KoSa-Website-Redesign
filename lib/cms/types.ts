@@ -20,6 +20,22 @@ export interface PublicRoom {
   features: string[];
   available: boolean;
   sortOrder: number;
+  /** Cloudbeds room type this room maps to (set in the admin, or matched by name). */
+  cloudbedsRoomTypeId?: string | null;
+  /** Live data from Cloudbeds, when connected. */
+  live?: LiveRoomData | null;
+}
+
+export interface LiveRoomData {
+  /** Tonight's lowest public nightly rate. */
+  nightly: number | null;
+  currency: string;
+  /** Rooms of this type still bookable tonight. */
+  roomsLeft: number | null;
+  maxGuests: number | null;
+  description: string | null;
+  features: string[];
+  photos: string[];
 }
 
 // Three public-facing room categories, assigned by the room's name:

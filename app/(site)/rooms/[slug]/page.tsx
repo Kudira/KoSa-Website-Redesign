@@ -4,6 +4,9 @@ import { notFound } from 'next/navigation';
 import { Users, BedDouble, Maximize2 } from 'lucide-react';
 import { SmoothImage as Image } from '@/components/shared/SmoothImage';
 import { listPublicRooms, getPublicRoomBySlug, displayCategory } from '@/lib/cms/rooms';
+import { getRoomWithLive } from '@/lib/cms/rooms-live';
+import { StayPicker } from '@/components/booking/StayPicker';
+import { SeaBand } from '@/components/ui/SeaBand';
 import { Carousel } from '@/components/shared/Carousel';
 import { Tide } from '@/components/ui/Tide';
 import { site } from '@/lib/site';
@@ -39,14 +42,20 @@ const DEFAULT_AMENITY_KEYS = [
 ] as const;
 
 export default async function RoomDetailPage({ params }: Props) {
-  const room = await getPublicRoomBySlug(params.slug);
+  const room = await getRoomWithLive(params.slug);
   if (!room) notFound();
 
   const { t } = getT();
   const cat = displayCategory(room.category);
   const catKey = ({ 'Garden View': 'rooms.filter.suite', 'Palm Side': 'rooms.filter.palmSide', 'Sea View': 'rooms.filter.beachView' } as const)[cat];
 
-  const amenities = room.amenities.length ? room.amenities : DEFAULT_AMENITY_KEYS.map((k) => t(k));
+  const amenities = room.amenities.length
+    ? room.amenities
+    : room.live?.features.length
+      ? room.live.features
+      : DEFAULT_AMENITY_KEYS.map((k) => t(k));
+  const livePrice = room.live?.nightly ?? null;
+  const roomsLeft = room.live?.roomsLeft ?? null;
   const [pricing, allRooms] = await Promise.all([getSetting('pricing'), listPublicRooms()]);
   const showPrices = !pricing.hideRoomPrices;
   const related = allRooms.filter((r) => r.slug !== room.slug).slice(0, 3);
@@ -105,7 +114,7 @@ export default async function RoomDetailPage({ params }: Props) {
           </ul>
 
           <div className="mt-12 font-display text-[1.45rem] md:text-[1.7rem] leading-[1.5] whitespace-pre-line text-pretty max-w-[38ch]" style={{ fontVariationSettings: "'SOFT' 100, 'opsz' 28" }}>
-            {room.description || t('roomDetail.descFallback')}
+            {room.description || room.live?.description || t('roomDetail.descFallback')}
           </div>
 
           <h2 className="mt-16 font-display text-display-sm">{t('roomDetail.amenities')}</h2>
@@ -126,15 +135,20 @@ export default async function RoomDetailPage({ params }: Props) {
             <p className="font-display text-3xl leading-tight">{room.name}</p>
             {showPrices && (
               <p className="mt-6">
-                <span className="block text-sm text-cream/70">{t('homeRooms.from')}</span>
-                <span className="font-display text-5xl">{formatGhs(roomStartingRateGhs(room.slug, room.price))}</span>
+                <span className="block text-sm text-cream/70">{livePrice ? t('roomLive.tonight') : t('homeRooms.from')}</span>
+                <span className="font-display text-5xl">{formatGhs(livePrice ?? roomStartingRateGhs(room.slug, room.price))}</span>
                 <span className="text-cream/70"> {t('homeRooms.night')}</span>
+              </p>
+            )}
+            {roomsLeft !== null && roomsLeft <= 3 && (
+              <p className="mt-3 inline-flex rounded-full bg-sunshine px-3.5 py-1.5 text-sm font-semibold text-forest-900">
+                {roomsLeft === 0 ? t('stay.soldOutTonight') : t('stay.tonightLeft').replace('{n}', String(roomsLeft))}
               </p>
             )}
             <div className="mt-8 grid gap-3">
               {room.available ? (
-                <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="inline-flex h-14 items-center justify-center rounded-full bg-sunshine px-6 font-semibold text-forest-900 transition-colors hover:bg-cream">
-                  {t('roomDetail.reserve')} {room.name}
+                <a href="#dates" className="inline-flex h-14 items-center justify-center rounded-full bg-sunshine px-6 font-semibold text-forest-900 transition-colors hover:bg-cream">
+                  {t('stay.check')}
                 </a>
               ) : (
                 <span aria-disabled="true" className="inline-flex h-14 items-center justify-center rounded-full bg-cream/10 px-6 font-semibold text-cream/60 cursor-not-allowed">
@@ -149,6 +163,15 @@ export default async function RoomDetailPage({ params }: Props) {
           </div>
         </aside>
       </section>
+
+      {room.available && (
+        <SeaBand id="dates">
+          <div className="container-page pt-6">
+            <h2 className="font-display text-display-md mb-8">{t('stay.heading')}</h2>
+            <StayPicker roomSlug={room.slug} roomName={room.name} tone="sea" />
+          </div>
+        </SeaBand>
+      )}
 
       {related.length > 0 && (
         <section data-sky="noon" className="container-page py-20 md:py-28">

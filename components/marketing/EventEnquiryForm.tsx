@@ -7,13 +7,13 @@
 import { useState } from 'react';
 import { useT } from '@/lib/i18n';
 
-export function EventEnquiryForm() {
+export function EventEnquiryForm({ defaultType = 'Wedding' }: { defaultType?: string } = {}) {
   const { t } = useT();
   const [form, setForm] = useState({
     name: '',
     email: '',
     company: '',
-    type: 'Wedding',
+    type: defaultType,
     dates: '',
     guests: '',
     message: '',
@@ -92,6 +92,8 @@ export function EventEnquiryForm() {
       <label className="block">
         <span className="text-sm text-cream/75">{t('eventsPage.form.type')}</span>
         <select className={`mt-1 ${field}`} value={form.type} onChange={(e) => set('type', e.target.value)}>
+          <option value="Tour group">{t('groups.optTour')}</option>
+          <option value="School or educational trip">{t('groups.optSchool')}</option>
           <option value="Wedding">{t('eventsPage.form.optWedding')}</option>
           <option value="Wellness retreat">{t('eventsPage.form.optRetreat')}</option>
           <option value="Corporate offsite">{t('eventsPage.form.optCorporate')}</option>

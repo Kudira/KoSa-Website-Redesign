@@ -45,7 +45,7 @@ export default async function VirtualTourPage() {
           </div>
           <div className="mt-12 flex flex-wrap gap-3">
             <Button href="/rooms">{t('tour.viewRooms')}</Button>
-            <Button href={site.bookingUrl} target="_blank" rel="noreferrer" variant="gold-outline">{t('common.bookYourStay')}</Button>
+            <Button href="/book" variant="gold-outline">{t('common.bookYourStay')}</Button>
           </div>
         </div>
       </section>

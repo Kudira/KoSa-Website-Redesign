@@ -20,6 +20,7 @@ const LINKS: { href: string; dictKey: DictKey }[] = [
   { href: '/dining', dictKey: 'nav.dine' },
   { href: '/experiences', dictKey: 'nav.experiences' },
   { href: '/events', dictKey: 'nav.events' },
+  { href: '/groups', dictKey: 'nav.groups' },
   { href: '/plan', dictKey: 'nav.plan' },
   { href: '/gallery', dictKey: 'nav.gallery' },
   { href: '/blog', dictKey: 'nav.blog' },

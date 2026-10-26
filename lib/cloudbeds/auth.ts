@@ -68,6 +68,8 @@ export async function saveToken(t: TokenResponse) {
 }
 
 export async function getAccessToken(): Promise<string> {
+  // A static, read-only API key is the preferred setup (see lib/cloudbeds/client.ts).
+  if (process.env.CLOUDBEDS_API_KEY) return process.env.CLOUDBEDS_API_KEY;
   const envToken = process.env.CLOUDBEDS_ACCESS_TOKEN;
   if (envToken) return envToken;
 
@@ -96,6 +98,7 @@ export async function cloudbedsFetch<T = unknown>(
     headers: {
       ...(init.headers || {}),
       Authorization: `Bearer ${token}`,
+      ...(process.env.CLOUDBEDS_API_KEY ? { 'x-api-key': process.env.CLOUDBEDS_API_KEY } : {}),
       Accept: 'application/json',
     },
   });

@@ -38,6 +38,7 @@ function serialize(r: {
   features: string[];
   available: boolean;
   sortOrder: number;
+  cloudbedsRoomTypeId?: string | null;
   translations: unknown;
 }): PublicRoom & { translations?: unknown } {
   return {
@@ -58,6 +59,7 @@ function serialize(r: {
     features: r.features,
     available: r.available,
     sortOrder: r.sortOrder,
+    cloudbedsRoomTypeId: r.cloudbedsRoomTypeId ?? null,
     translations: r.translations,
   };
 }

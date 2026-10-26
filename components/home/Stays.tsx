@@ -3,13 +3,14 @@
 // Dusk. Three ways to stay, chosen by how many nights you can give yourself.
 
 import { useState } from 'react';
+import { wa } from '@/lib/whatsapp';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useT } from '@/lib/i18n';
 import type { DictKey } from '@/lib/i18n/dictionaries';
 import { PACKAGES, formatGhs, type PackageKey } from '@/lib/pricing';
 import { sentences, prose } from '@/lib/content/media';
-import { site } from '@/lib/site';
+import { BookButton } from '@/components/shared/BookButton';
 import { cn } from '@/lib/utils';
 
 const KEYS: PackageKey[] = ['weekend', 'short', 'full'];
@@ -78,9 +79,15 @@ export function Stays() {
                   {p.nights} {t('book.nightsUnit')}. {t('stays.includes')} {p.inclusions}.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center rounded-full bg-forest px-7 font-semibold text-cream transition-colors hover:bg-forest-700">
+                  <BookButton
+                    category="PACKAGE"
+                    itemName={t(`home.itineraries.${key}.title` as DictKey)}
+                    message={wa.stayPackage({ name: t(`home.itineraries.${key}.title` as DictKey), nights: p.nights, priceGhs: p.fromGhs, inclusions: p.inclusions })}
+                    source="home/stays"
+                    className="inline-flex h-12 items-center rounded-full bg-forest px-7 font-semibold text-cream transition-colors hover:bg-forest-700"
+                  >
                     {t('home.itineraries.bookNow')}
-                  </a>
+                  </BookButton>
                   <Link href="/plan" className="inline-flex h-12 items-center rounded-full px-5 font-semibold ring-1 ring-inset ring-forest/30 transition-colors hover:bg-forest/5">
                     {t('home.itineraries.cta')}
                   </Link>

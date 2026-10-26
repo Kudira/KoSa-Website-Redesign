@@ -48,14 +48,14 @@ export function RoomsDrift({ rooms, showPrices = true }: { rooms: PublicRoom[]; 
 
   return (
     <section data-sky="morning" className="relative">
-      <div ref={pinRef} className="relative lg:h-screen lg:flex lg:flex-col lg:justify-center overflow-hidden py-20 lg:py-0">
-        <div className="container-page grid gap-8 lg:grid-cols-12 lg:items-end mb-12 lg:mb-14">
+      <div ref={pinRef} className="relative lg:h-screen lg:flex lg:flex-col lg:justify-center overflow-hidden py-20 lg:pt-24 lg:pb-10">
+        <div className="container-page grid gap-8 lg:grid-cols-12 lg:items-end mb-12 lg:mb-8">
           <div className="lg:col-span-7">
             <p className="eyebrow mb-5">{t('homeRooms.eyebrow')}</p>
-            <h2 className="font-display text-display-lg text-balance">{t('home.roomsTeaser.headline')}</h2>
+            <h2 className="font-display text-display-lg lg:text-[clamp(2.5rem,4.6vw,4.5rem)] text-balance">{t('home.roomsTeaser.headline')}</h2>
           </div>
           <div className="lg:col-span-5">
-            <p className="text-lede opacity-85 max-w-measure">{prose(t('home.roomsTeaser.body'))}</p>
+            <p className="text-lede opacity-85 max-w-measure lg:line-clamp-3">{prose(t('home.roomsTeaser.body'))}</p>
             <Link href="/rooms" className="mt-6 inline-flex font-medium link-tide">
               {t('homeRooms.cta')}
             </Link>
@@ -67,9 +67,9 @@ export function RoomsDrift({ rooms, showPrices = true }: { rooms: PublicRoom[]; 
           className="flex gap-5 md:gap-8 px-5 md:px-10 xl:px-16 overflow-x-auto lg:overflow-visible snap-x snap-mandatory lg:snap-none no-scrollbar will-change-transform"
         >
           {rooms.map((room, i) => (
-            <li key={room.id} className="snap-start shrink-0 w-[78vw] sm:w-[52vw] lg:w-[30vw] xl:w-[27vw]">
+            <li key={room.id} className="snap-start shrink-0 w-[78vw] sm:w-[52vw] lg:w-[min(30vw,calc(48vh*0.82))]">
               <Link href={`/rooms/${room.slug}`} className="group block">
-                <div className={`relative overflow-hidden ${i % 2 ? 'aspect-[4/5] rounded-pebble' : 'aspect-[4/5] rounded-t-full rounded-b-pebble'}`}>
+                <div className={`relative overflow-hidden aspect-[4/5] lg:aspect-auto lg:h-[min(48vh,32vw)] ${i % 2 ? 'rounded-pebble' : 'rounded-t-full rounded-b-pebble'}`}>
                   {room.image && (
                     <Image src={room.image} alt={room.name} fill sizes="(min-width:1024px) 30vw, 78vw" className="object-cover branded-img transition-transform duration-[1.6s] ease-tide group-hover:scale-105" />
                   )}
@@ -78,15 +78,18 @@ export function RoomsDrift({ rooms, showPrices = true }: { rooms: PublicRoom[]; 
                   </span>
                 </div>
                 <div className="mt-5 flex items-start justify-between gap-6">
-                  <h3 className="font-display text-2xl md:text-[1.75rem] leading-tight">{room.name}</h3>
+                  <h3 className="font-display text-2xl leading-tight">{room.name}</h3>
                   <span className="mt-1 shrink-0 text-sm opacity-70">
                     {t('homeRooms.guests')} {room.maxGuests}
                   </span>
                 </div>
                 {showPrices && (
                   <p className="mt-2 opacity-80">
-                    {t('homeRooms.from')} {formatGhs(roomStartingRateGhs(room.slug, room.price))} {t('homeRooms.night')}
+                    {room.live?.nightly ? t('roomLive.tonight') : t('homeRooms.from')} {formatGhs(room.live?.nightly ?? roomStartingRateGhs(room.slug, room.price))} {t('homeRooms.night')}
                   </p>
+                )}
+                {room.live?.roomsLeft != null && room.live.roomsLeft > 0 && room.live.roomsLeft <= 3 && (
+                  <p className="mt-1 text-sm font-semibold text-coral-700">{t('stay.tonightLeft').replace('{n}', String(room.live.roomsLeft))}</p>
                 )}
               </Link>
             </li>

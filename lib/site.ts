@@ -52,6 +52,7 @@ export const site = {
       dictKey: 'nav.explore',
       children: [
         { href: '/events', dictKey: 'nav.events' },
+        { href: '/groups', dictKey: 'nav.groups' },
         { href: '/gallery', dictKey: 'nav.gallery' },
         { href: '/blog', dictKey: 'nav.blog' },
         // Virtual Tour temporarily hidden from the nav (re-enable when ready).

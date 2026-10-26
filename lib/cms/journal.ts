@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { applyTranslationsAll, applyTranslations } from '@/lib/admin/i18n';
 import { getServerLocale } from '@/lib/i18n/server';
+import { COMMUNITY_POSTS } from '@/lib/content/community';
 
 export interface PublicJournalPost {
   id: string;
@@ -17,6 +18,22 @@ export interface PublicJournalPost {
 }
 
 const TRANSLATABLE = ['title', 'excerpt', 'body', 'seoTitle', 'seoDescription'] as const;
+
+// Ko-Sa no longer runs turtle walks. Older posts in the database may still
+// carry a section about them; drop any heading that mentions turtles together
+// with the paragraphs under it, up to the next heading.
+function withoutTurtles(html: string) {
+  return html.replace(/<h2>[^<]*turtle[^<]*<\/h2>[\s\S]*?(?=<h2>|$)/gi, '').trim();
+}
+
+const byDate = (a: PublicJournalPost, b: PublicJournalPost) =>
+  new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime();
+
+/** Admin posts first; the built-in community stories fill in any slug not in the admin. */
+function withCommunity(posts: PublicJournalPost[]) {
+  const have = new Set(posts.map((p) => p.slug));
+  return [...posts, ...COMMUNITY_POSTS.filter((p) => !have.has(p.slug))].sort(byDate);
+}
 
 function serialize(r: {
   id: string;
@@ -37,7 +54,7 @@ function serialize(r: {
     slug: r.slug,
     title: r.title,
     excerpt: r.excerpt,
-    body: r.body,
+    body: withoutTurtles(r.body),
     image: r.image,
     author: r.author,
     tags: r.tags,
@@ -56,9 +73,9 @@ export async function listPublicJournalPosts(): Promise<PublicJournalPost[]> {
       orderBy: { publishedAt: 'desc' },
     });
     const overlaid = applyTranslationsAll(rows.map(serialize), TRANSLATABLE, locale);
-    return overlaid.map(({ translations: _t, ...rest }) => rest as PublicJournalPost);
+    return withCommunity(overlaid.map(({ translations: _t, ...rest }) => rest as PublicJournalPost));
   } catch {
-    return [];
+    return withCommunity([]);
   }
 }
 
@@ -68,11 +85,11 @@ export async function getPublicJournalPostBySlug(slug: string): Promise<PublicJo
     const row = await prisma.journalPost.findFirst({
       where: { slug, status: 'PUBLISHED' },
     });
-    if (!row) return null;
+    if (!row) return COMMUNITY_POSTS.find((p) => p.slug === slug) ?? null;
     const overlaid = applyTranslations(serialize(row), TRANSLATABLE, locale);
     const { translations: _t, ...rest } = overlaid as { translations?: unknown } & PublicJournalPost;
     return rest as PublicJournalPost;
   } catch {
-    return null;
+    return COMMUNITY_POSTS.find((p) => p.slug === slug) ?? null;
   }
 }

@@ -106,9 +106,7 @@ export default async function BlogPost({ params }: Props) {
             <p className="mt-2 text-cream/80">{t('blogPage.cta.body')}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a
-                href={site.bookingUrl}
-                target="_blank"
-                rel="noreferrer"
+                href="/book"
                 className="inline-flex h-12 items-center justify-center rounded-full bg-sunshine px-6 font-semibold text-forest-900 hover:bg-cream transition-colors"
               >
                 {t('common.bookYourStay')}

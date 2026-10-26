@@ -121,6 +121,7 @@ function HeroSection({
       <TextField label="Headline" name="headline" value={asStr(values.headline)} onChange={(e) => onChange('headline', e.target.value)} />
       <TextField label="Tagline" name="tagline" value={asStr(values.tagline)} onChange={(e) => onChange('tagline', e.target.value)} />
       <TextField label="Location line" name="location" value={asStr(values.location)} onChange={(e) => onChange('location', e.target.value)} />
+      <TextField label="Booking nudge under the hero (e.g. a seasonal line; leave empty for the default)" name="urgency" value={asStr(values.urgency)} onChange={(e) => onChange('urgency', e.target.value)} />
       <MediaPickerSingle label="Hero poster image" name="posterUrl" value={asStr(values.posterUrl)} onChange={(v) => onChange('posterUrl', v)} folder="hero" />
       <TextField label="Hero video URL (optional)" name="videoUrl" value={asStr(values.videoUrl)} onChange={(e) => onChange('videoUrl', e.target.value)} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
